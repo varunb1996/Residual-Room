@@ -1,0 +1,18 @@
+# Secrets
+.env
+
+# Non-committable source text (commit_allowed: false), filled by `make fetch`
+corpus_local/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Web (Prompt 6)
+web/node_modules/
+web/dist/
+
+# Local Claude Code settings
+.claude/settings.local.json

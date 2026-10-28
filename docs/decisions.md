@@ -52,3 +52,12 @@
 - WhatsApp mock follows Prompt 7: template-only outside the 24-hour window, plus opt-in.
 - State machine (finalized at Prompt 6): a hard-blocked item moves to `in_review` with a blocked flag; overrides happen only in `in_review`, by the reviewer, with a reason; `rejected → draft`.
 - Model choices (generator, judge, embeddings) are asked at Prompts 1–3.
+
+## 2026-10-28 — Skeleton (Prompt 1)
+- Python pinned to 3.12 (uv-managed); the system Python 3.14 is newer than some driver wheels are tested on.
+- Driver: psycopg 3. Plain `postgres://` URLs from Neon/Render are rewritten to `postgresql+psycopg://` in settings, so `.env` can hold the URL exactly as Neon gives it.
+- Migrations: Alembic, hand-written until there are ORM models. `migrations/env.py` reads `DATABASE_URL` from settings, never from `alembic.ini`, so the secret lives only in `.env`.
+- `/health` returns 200 only if the database answers *and* pgvector is installed; otherwise 503 with no exception text (it can contain the host).
+- The real-database test fails rather than skips when `DATABASE_URL` is missing, so `make test` can't pass silently.
+- `.gitattributes` forces LF: make recipes break on CRLF, and deploys run on Linux.
+- Dev-machine note: the JioFiber router's DNS refuses every name under `aws.neon.tech` (Neon's database endpoints), while `neon.tech` resolves. Fixed by pointing the PC's Wi-Fi DNS at 1.1.1.1 / 8.8.8.8. Not a code issue.
