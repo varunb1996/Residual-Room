@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, type PieceSummary } from "./api";
+import Analytics from "./Analytics";
 import Campaigns from "./Campaigns";
 import Generate from "./Generate";
 import NewPiece from "./NewPiece";
@@ -9,7 +10,7 @@ export default function App() {
   const [pieces, setPieces] = useState<PieceSummary[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [creating, setCreating] = useState<"paste" | "generate" | null>(null);
-  const [screen, setScreen] = useState<"review" | "campaigns">("review");
+  const [screen, setScreen] = useState<"review" | "campaigns" | "analytics">("review");
   const opened = useCallback((id: number) => {
     setCreating(null);
     setSelected(id);
@@ -26,19 +27,19 @@ export default function App() {
 
   const tabs = (
     <nav className="tabs">
-      {(["review", "campaigns"] as const).map((t) => (
+      {(["review", "campaigns", "analytics"] as const).map((t) => (
         <button key={t} className={`tab ${screen === t ? "active" : ""}`} onClick={() => setScreen(t)}>
-          {t === "review" ? "Review" : "Campaigns"}
+          {t[0].toUpperCase() + t.slice(1)}
         </button>
       ))}
     </nav>
   );
 
-  if (screen === "campaigns") {
+  if (screen !== "review") {
     return (
       <div className="app single">
         <header className="topbar"><span className="brand">Residual Room</span>{tabs}</header>
-        <main className="main"><Campaigns /></main>
+        <main className="main">{screen === "campaigns" ? <Campaigns /> : <Analytics />}</main>
       </div>
     );
   }

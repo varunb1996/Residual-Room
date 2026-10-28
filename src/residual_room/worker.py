@@ -10,6 +10,7 @@ the test channel (senders.TelegramSender).
 
 import sys
 import time
+from datetime import UTC, datetime
 
 import httpx
 from sqlalchemy import select
@@ -54,6 +55,7 @@ def handle_command(s: Session, chat_id: str, text: str) -> str:
     if cmd == "/stop":
         if sub is not None:
             sub.subscribed = False
+            sub.unsubscribed_at = datetime.now(UTC)
         return "Unsubscribed. /start to come back."
     return "Commands: /start, /segment <transitioning|practitioner>, /stop"
 

@@ -58,6 +58,7 @@ def unsubscribe(s: Session, token: str) -> Subscriber:
     if sub is None:
         raise NotFound("unknown unsubscribe link")
     sub.subscribed = False
+    sub.unsubscribed_at = datetime.now(UTC)
     return sub
 
 

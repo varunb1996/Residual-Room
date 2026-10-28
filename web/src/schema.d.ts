@@ -299,6 +299,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/analytics/{dataset}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Analytics */
+        get: operations["get_analytics_api_analytics__dataset__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/analytics/{dataset}/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refresh
+         * @description Real: recompute from deliveries, clicks and subscribers. Seeded: regenerate.
+         */
+        post: operations["refresh_api_analytics__dataset__refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/analytics/{dataset}/narrate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Narrate */
+        post: operations["narrate_api_analytics__dataset__narrate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/analytics/narrations/{narration_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Narration */
+        get: operations["get_narration_api_analytics_narrations__narration_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -320,6 +391,20 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AnalyticsOut */
+        AnalyticsOut: {
+            /** Dataset */
+            dataset: string;
+            /** Label */
+            label: string;
+            /** Computed At */
+            computed_at: string;
+            /** Rows */
+            rows: components["schemas"]["RowOut"][];
+            /** Insights */
+            insights: components["schemas"]["InsightOut"][];
+            narration: components["schemas"]["NarrationOut"] | null;
+        };
         /** AuditOut */
         AuditOut: {
             /**
@@ -491,6 +576,27 @@ export interface components {
             /** Override Reason */
             override_reason: string | null;
         };
+        /** InsightOut */
+        InsightOut: {
+            /** Rule */
+            rule: string;
+            /** Status */
+            status: string;
+            /** Segment */
+            segment: string;
+            /** Channel */
+            channel: string;
+            /** Statement */
+            statement: string;
+            /** Row Ids */
+            row_ids: number[];
+            /** N */
+            n: number | null;
+            /** Need */
+            need: number;
+            /** P */
+            p: number | null;
+        };
         /** JobOut */
         JobOut: {
             /** Id */
@@ -512,6 +618,38 @@ export interface components {
              * Format: date-time
              */
             started_at: string;
+            /** Finished At */
+            finished_at: string | null;
+        };
+        /** NarrationOut */
+        NarrationOut: {
+            /** Id */
+            id: number;
+            /** Dataset */
+            dataset: string;
+            /** Status */
+            status: string;
+            /** Text */
+            text: string | null;
+            /** Segments */
+            segments: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Report */
+            report: {
+                [key: string]: unknown;
+            } | null;
+            /** Verdict */
+            verdict: string | null;
+            /** Model */
+            model: string | null;
+            /** Error */
+            error: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
             /** Finished At */
             finished_at: string | null;
         };
@@ -616,6 +754,25 @@ export interface components {
         ReasonIn: {
             /** Reason */
             reason: string;
+        };
+        /** RowOut */
+        RowOut: {
+            /** Id */
+            id: number;
+            /** Week */
+            week: string | null;
+            /** Channel */
+            channel: string;
+            /** Segment */
+            segment: string;
+            /** Metric */
+            metric: string;
+            /** Value */
+            value: number;
+            /** N */
+            n: number | null;
+            /** Derived */
+            derived: boolean;
         };
         /** SegmentOut */
         SegmentOut: {
@@ -1299,6 +1456,130 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SendResultOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_analytics_api_analytics__dataset__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset: "real" | "seeded";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    refresh_api_analytics__dataset__refresh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset: "real" | "seeded";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InsightOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    narrate_api_analytics__dataset__narrate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset: "real" | "seeded";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NarrationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_narration_api_analytics_narrations__narration_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                narration_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NarrationOut"];
                 };
             };
             /** @description Validation Error */

@@ -164,3 +164,13 @@ textarea { resize: vertical; }
   .evidence { position: static; max-height: none; }
   .row { grid-template-columns: 1fr; }
 }
+
+.analytics { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.dataset-banner { font-weight: 600; padding: 8px 10px; border-radius: 7px; margin-bottom: 8px; }
+.dataset-banner.real { background: var(--pass-bg); color: var(--pass); }
+.dataset-banner.seeded { background: var(--warn-bg); color: var(--warn); }
+.panel-seeded { border-style: dashed; }
+.insight { padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.insight.thin { color: var(--muted); }
+.narration { margin-top: 8px; }
+@media (max-width: 900px) { .analytics { grid-template-columns: 1fr; } }

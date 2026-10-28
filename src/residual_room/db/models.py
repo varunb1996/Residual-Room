@@ -14,6 +14,7 @@ from sqlalchemy import (
     UniqueConstraint,
     func,
 )
+from sqlalchemy import Float as sa_Float
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -196,6 +197,7 @@ class Subscriber(Base):
     opted_in_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     # WhatsApp (mock): free-form messages only within 24 h of the subscriber's last message.
     whatsapp_last_inbound_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    unsubscribed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     token: Mapped[str] = mapped_column(String, unique=True)  # for the unsubscribe link
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
@@ -260,3 +262,44 @@ class KeyValue(Base):
 
     key: Mapped[str] = mapped_column(String, primary_key=True)
     value: Mapped[str] = mapped_column(Text)
+
+
+# ---------- analytics (Prompt 8) ----------
+
+
+class MetricRow(Base):
+    """One number. Narration must cite these rows ([m:<id>]) for every figure it states.
+
+    week None = the whole window. dataset keeps real and seeded data apart; they
+    are never mixed in one query."""
+
+    __tablename__ = "metric_rows"
+    __table_args__ = (CheckConstraint("dataset IN ('real', 'seeded')", name="metric_rows_dataset_valid"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    dataset: Mapped[str] = mapped_column(String, index=True)  # real | seeded
+    week: Mapped[date | None] = mapped_column(Date)  # Monday of the ISO week; None = whole window
+    channel: Mapped[str] = mapped_column(String)  # email | telegram | whatsapp | all
+    segment: Mapped[str] = mapped_column(String)
+    metric: Mapped[str] = mapped_column(String)
+    value: Mapped[float] = mapped_column(sa_Float)
+    n: Mapped[int | None] = mapped_column(Integer)  # sample the value is computed over
+    derived: Mapped[bool] = mapped_column(Boolean, default=False)  # computed by an insight rule
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Narration(Base):
+    __tablename__ = "narrations"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    dataset: Mapped[str] = mapped_column(String)
+    status: Mapped[str] = mapped_column(String)  # running | done | failed
+    insights: Mapped[list | None] = mapped_column(JSONB)
+    segments: Mapped[list | None] = mapped_column(JSONB)
+    text: Mapped[str | None] = mapped_column(Text)
+    report: Mapped[dict | None] = mapped_column(JSONB)
+    verdict: Mapped[str | None] = mapped_column(String)
+    model: Mapped[str | None] = mapped_column(String)
+    error: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

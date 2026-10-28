@@ -806,6 +806,191 @@
         }
       }
     },
+    "/api/analytics/{dataset}": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Analytics",
+        "operationId": "get_analytics_api_analytics__dataset__get",
+        "parameters": [
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "real",
+                "seeded"
+              ],
+              "type": "string",
+              "title": "Dataset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/{dataset}/refresh": {
+      "post": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Refresh",
+        "description": "Real: recompute from deliveries, clicks and subscribers. Seeded: regenerate.",
+        "operationId": "refresh_api_analytics__dataset__refresh_post",
+        "parameters": [
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "real",
+                "seeded"
+              ],
+              "type": "string",
+              "title": "Dataset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InsightOut"
+                  },
+                  "title": "Response Refresh Api Analytics  Dataset  Refresh Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/{dataset}/narrate": {
+      "post": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Narrate",
+        "operationId": "narrate_api_analytics__dataset__narrate_post",
+        "parameters": [
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "real",
+                "seeded"
+              ],
+              "type": "string",
+              "title": "Dataset"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NarrationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/narrations/{narration_id}": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Narration",
+        "operationId": "get_narration_api_analytics_narrations__narration_id__get",
+        "parameters": [
+          {
+            "name": "narration_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Narration Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NarrationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -825,6 +1010,56 @@
   },
   "components": {
     "schemas": {
+      "AnalyticsOut": {
+        "properties": {
+          "dataset": {
+            "type": "string",
+            "title": "Dataset"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "computed_at": {
+            "type": "string",
+            "title": "Computed At"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/RowOut"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "insights": {
+            "items": {
+              "$ref": "#/components/schemas/InsightOut"
+            },
+            "type": "array",
+            "title": "Insights"
+          },
+          "narration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NarrationOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset",
+          "label",
+          "computed_at",
+          "rows",
+          "insights",
+          "narration"
+        ],
+        "title": "AnalyticsOut"
+      },
       "AuditOut": {
         "properties": {
           "at": {
@@ -1367,6 +1602,76 @@
         ],
         "title": "HitOut"
       },
+      "InsightOut": {
+        "properties": {
+          "rule": {
+            "type": "string",
+            "title": "Rule"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "segment": {
+            "type": "string",
+            "title": "Segment"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "statement": {
+            "type": "string",
+            "title": "Statement"
+          },
+          "row_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Row Ids"
+          },
+          "n": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N"
+          },
+          "need": {
+            "type": "integer",
+            "title": "Need"
+          },
+          "p": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule",
+          "status",
+          "segment",
+          "channel",
+          "statement",
+          "row_ids",
+          "n",
+          "need",
+          "p"
+        ],
+        "title": "InsightOut"
+      },
       "JobOut": {
         "properties": {
           "id": {
@@ -1442,6 +1747,125 @@
           "finished_at"
         ],
         "title": "JobOut"
+      },
+      "NarrationOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "dataset": {
+            "type": "string",
+            "title": "Dataset"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "segments": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Segments"
+          },
+          "report": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report"
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "dataset",
+          "status",
+          "text",
+          "segments",
+          "report",
+          "verdict",
+          "model",
+          "error",
+          "created_at",
+          "finished_at"
+        ],
+        "title": "NarrationOut"
       },
       "OverrideIn": {
         "properties": {
@@ -1728,6 +2152,69 @@
           "reason"
         ],
         "title": "ReasonIn"
+      },
+      "RowOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "week": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "segment": {
+            "type": "string",
+            "title": "Segment"
+          },
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "n": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N"
+          },
+          "derived": {
+            "type": "boolean",
+            "title": "Derived"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "week",
+          "channel",
+          "segment",
+          "metric",
+          "value",
+          "n",
+          "derived"
+        ],
+        "title": "RowOut"
       },
       "SegmentOut": {
         "properties": {
