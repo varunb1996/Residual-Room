@@ -179,3 +179,84 @@ class GenerationJob(Base):
     error: Mapped[str | None] = mapped_column(Text)
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+# ---------- channels and campaigns (Prompt 7) ----------
+
+
+class Subscriber(Base):
+    __tablename__ = "subscribers"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    email: Mapped[str | None] = mapped_column(String, unique=True)
+    telegram_chat_id: Mapped[str | None] = mapped_column(String, unique=True)
+    whatsapp: Mapped[str | None] = mapped_column(String, unique=True)
+    segment: Mapped[str] = mapped_column(String)
+    subscribed: Mapped[bool] = mapped_column(Boolean, default=True)
+    opted_in_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # WhatsApp (mock): free-form messages only within 24 h of the subscriber's last message.
+    whatsapp_last_inbound_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    token: Mapped[str] = mapped_column(String, unique=True)  # for the unsubscribe link
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Campaign(Base):
+    __tablename__ = "campaigns"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    piece_id: Mapped[int] = mapped_column(ForeignKey("pieces.id", ondelete="CASCADE"))
+    version_id: Mapped[int] = mapped_column(ForeignKey("piece_versions.id", ondelete="CASCADE"))
+    segments: Mapped[list] = mapped_column(JSONB)
+    channels: Mapped[list] = mapped_column(JSONB)
+    scheduled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    status: Mapped[str] = mapped_column(String)  # scheduled | sending | sent | cancelled
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Delivery(Base):
+    __tablename__ = "deliveries"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    campaign_id: Mapped[int] = mapped_column(ForeignKey("campaigns.id", ondelete="CASCADE"))
+    channel: Mapped[str] = mapped_column(String)
+    segment: Mapped[str] = mapped_column(String)
+    recipient: Mapped[str] = mapped_column(String)
+    status: Mapped[str] = mapped_column(String)  # sent | failed | refused | rejected
+    provider_id: Mapped[str | None] = mapped_column(String)
+    error: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Link(Base):
+    """A tracked outbound link: /r/{token} redirects to target_url and logs a click."""
+
+    __tablename__ = "links"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    token: Mapped[str] = mapped_column(String, unique=True)
+    campaign_id: Mapped[int] = mapped_column(ForeignKey("campaigns.id", ondelete="CASCADE"))
+    piece_id: Mapped[int] = mapped_column(ForeignKey("pieces.id", ondelete="CASCADE"))
+    segment: Mapped[str] = mapped_column(String)
+    channel: Mapped[str] = mapped_column(String)
+    label: Mapped[str] = mapped_column(String)  # cta | source | read_next
+    target_url: Mapped[str] = mapped_column(Text)
+
+
+class Click(Base):
+    """A real metric (CLAUDE.md principle 9). No IP or personal data is stored."""
+
+    __tablename__ = "clicks"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    link_id: Mapped[int] = mapped_column(ForeignKey("links.id", ondelete="CASCADE"))
+    at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class KeyValue(Base):
+    """Small worker state, e.g. the Telegram getUpdates offset."""
+
+    __tablename__ = "kv"
+
+    key: Mapped[str] = mapped_column(String, primary_key=True)
+    value: Mapped[str] = mapped_column(Text)

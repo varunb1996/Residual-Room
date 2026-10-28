@@ -511,6 +511,301 @@
         }
       }
     },
+    "/api/campaigns": {
+      "get": {
+        "tags": [
+          "campaigns"
+        ],
+        "summary": "List Campaigns",
+        "operationId": "list_campaigns_api_campaigns_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CampaignOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Campaigns Api Campaigns Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "campaigns"
+        ],
+        "summary": "Create Campaign",
+        "operationId": "create_campaign_api_campaigns_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CampaignIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/{campaign_id}/cancel": {
+      "post": {
+        "tags": [
+          "campaigns"
+        ],
+        "summary": "Cancel",
+        "operationId": "cancel_api_campaigns__campaign_id__cancel_post",
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pieces/{piece_id}/preview": {
+      "get": {
+        "tags": [
+          "campaigns"
+        ],
+        "summary": "Preview",
+        "operationId": "preview_api_pieces__piece_id__preview_get",
+        "parameters": [
+          {
+            "name": "piece_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Piece Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscribers": {
+      "get": {
+        "tags": [
+          "campaigns"
+        ],
+        "summary": "List Subscribers",
+        "operationId": "list_subscribers_api_subscribers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SubscriberOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Subscribers Api Subscribers Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "campaigns"
+        ],
+        "summary": "Add Subscriber",
+        "operationId": "add_subscriber_api_subscribers_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriberIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/whatsapp/inbound": {
+      "post": {
+        "tags": [
+          "campaigns"
+        ],
+        "summary": "Whatsapp Inbound",
+        "description": "Mock: the subscriber messaged us, which opens the 24-hour free-form window.",
+        "operationId": "whatsapp_inbound_api_whatsapp_inbound_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatsAppInbound"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/whatsapp/send": {
+      "post": {
+        "tags": [
+          "campaigns"
+        ],
+        "summary": "Whatsapp Send",
+        "operationId": "whatsapp_send_api_whatsapp_send_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatsAppSendIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendResultOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -590,6 +885,137 @@
           "detail"
         ],
         "title": "AuditOut"
+      },
+      "CampaignIn": {
+        "properties": {
+          "piece_id": {
+            "type": "integer",
+            "title": "Piece Id"
+          },
+          "segments": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "transitioning",
+                "practitioner"
+              ]
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Segments"
+          },
+          "channels": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "email",
+                "telegram",
+                "whatsapp"
+              ]
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Channels"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "piece_id",
+          "segments",
+          "channels"
+        ],
+        "title": "CampaignIn"
+      },
+      "CampaignOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "piece_id": {
+            "type": "integer",
+            "title": "Piece Id"
+          },
+          "piece_title": {
+            "type": "string",
+            "title": "Piece Title"
+          },
+          "segments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Segments"
+          },
+          "channels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Channels"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Scheduled At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "sent_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sent At"
+          },
+          "deliveries": {
+            "items": {
+              "$ref": "#/components/schemas/DeliveryOut"
+            },
+            "type": "array",
+            "title": "Deliveries"
+          },
+          "clicks": {
+            "items": {
+              "$ref": "#/components/schemas/ClickCount"
+            },
+            "type": "array",
+            "title": "Clicks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "piece_id",
+          "piece_title",
+          "segments",
+          "channels",
+          "scheduled_at",
+          "status",
+          "sent_at",
+          "deliveries",
+          "clicks"
+        ],
+        "title": "CampaignOut"
       },
       "CheckOut": {
         "properties": {
@@ -715,6 +1141,74 @@
           "corpus_version"
         ],
         "title": "ChunkOut"
+      },
+      "ClickCount": {
+        "properties": {
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "segment": {
+            "type": "string",
+            "title": "Segment"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "clicks": {
+            "type": "integer",
+            "title": "Clicks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "channel",
+          "segment",
+          "label",
+          "clicks"
+        ],
+        "title": "ClickCount"
+      },
+      "DeliveryOut": {
+        "properties": {
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "segment": {
+            "type": "string",
+            "title": "Segment"
+          },
+          "recipient": {
+            "type": "string",
+            "title": "Recipient"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "channel",
+          "segment",
+          "recipient",
+          "status",
+          "error"
+        ],
+        "title": "DeliveryOut"
       },
       "EditIn": {
         "properties": {
@@ -1188,6 +1682,39 @@
         ],
         "title": "PieceSummary"
       },
+      "PreviewOut": {
+        "properties": {
+          "email_subject": {
+            "type": "string",
+            "title": "Email Subject"
+          },
+          "email_html": {
+            "type": "string",
+            "title": "Email Html"
+          },
+          "email_text": {
+            "type": "string",
+            "title": "Email Text"
+          },
+          "telegram_html": {
+            "type": "string",
+            "title": "Telegram Html"
+          },
+          "whatsapp_text": {
+            "type": "string",
+            "title": "Whatsapp Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email_subject",
+          "email_html",
+          "email_text",
+          "telegram_html",
+          "whatsapp_text"
+        ],
+        "title": "PreviewOut"
+      },
       "ReasonIn": {
         "properties": {
           "reason": {
@@ -1262,6 +1789,154 @@
         ],
         "title": "SegmentOut"
       },
+      "SendResultOut": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "rendered": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rendered"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "error",
+          "rendered"
+        ],
+        "title": "SendResultOut"
+      },
+      "SubscriberIn": {
+        "properties": {
+          "segment": {
+            "type": "string",
+            "enum": [
+              "transitioning",
+              "practitioner"
+            ],
+            "title": "Segment"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "whatsapp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Whatsapp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "segment"
+        ],
+        "title": "SubscriberIn"
+      },
+      "SubscriberOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "segment": {
+            "type": "string",
+            "title": "Segment"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "telegram_chat_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Chat Id"
+          },
+          "whatsapp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Whatsapp"
+          },
+          "subscribed": {
+            "type": "boolean",
+            "title": "Subscribed"
+          },
+          "whatsapp_last_inbound_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Whatsapp Last Inbound At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "segment",
+          "email",
+          "telegram_chat_id",
+          "whatsapp",
+          "subscribed",
+          "whatsapp_last_inbound_at"
+        ],
+        "title": "SubscriberOut"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -1301,6 +1976,59 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "WhatsAppInbound": {
+        "properties": {
+          "whatsapp": {
+            "type": "string",
+            "title": "Whatsapp"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "whatsapp",
+          "text"
+        ],
+        "title": "WhatsAppInbound"
+      },
+      "WhatsAppSendIn": {
+        "properties": {
+          "whatsapp": {
+            "type": "string",
+            "title": "Whatsapp"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "template": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Template"
+          }
+        },
+        "type": "object",
+        "required": [
+          "whatsapp"
+        ],
+        "title": "WhatsAppSendIn"
       }
     }
   }

@@ -4,7 +4,7 @@
       ^                 |                        |
       |           checks_failed               reject
       +-----------------+                        v
-      +-----------edit------------------------ rejected
+      +-----------edit------------------------ rejected      scheduled --cancel--> approved
 
 Every allowed move is in TRANSITIONS; anything else raises InvalidTransition.
 Editing creates a new version and returns the piece to draft, so approvals and
@@ -33,8 +33,9 @@ class Action(StrEnum):
     APPROVE = "approve"
     REJECT = "reject"
     EDIT = "edit"
-    SCHEDULE = "schedule"  # Prompt 7
-    SEND = "send"  # Prompt 7
+    SCHEDULE = "schedule"
+    CANCEL = "cancel"  # unschedule a campaign
+    SEND = "send"
 
 
 TRANSITIONS: dict[tuple[State, Action], State] = {
@@ -45,6 +46,7 @@ TRANSITIONS: dict[tuple[State, Action], State] = {
     (State.IN_REVIEW, Action.REJECT): State.REJECTED,
     (State.APPROVED, Action.SCHEDULE): State.SCHEDULED,
     (State.SCHEDULED, Action.SEND): State.SENT,
+    (State.SCHEDULED, Action.CANCEL): State.APPROVED,
     # Any edit is a new version and goes back to draft.
     (State.DRAFT, Action.EDIT): State.DRAFT,
     (State.IN_REVIEW, Action.EDIT): State.DRAFT,

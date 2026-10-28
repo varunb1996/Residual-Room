@@ -25,6 +25,16 @@ explainers:
   exp-005: {topic: Lost in the Middle (Liu et al.), series: Paper to Practice, source_topics: [5]}
   exp-006: {topic: Judging LLM-as-a-Judge (Zheng et al.), series: Paper to Practice, source_topics: [6]}
 
+# Where outbound links point. There is no website yet: placeholders until one exists.
+site:
+  base_url: https://residualroom.example
+  explainer_path: /explainers/{id}
+  subscribe_path: /subscribe
+
+# WhatsApp (mock): outside the 24-hour window only these approved templates may be sent.
+whatsapp_templates:
+  new_issue: "New from Residual Room: {{1}}. Read it here: {{2}}"
+
 # The publication's operational facts (schedule, series, subscription, corrections).
 # Tiny docs, always shown to the judge in full when it checks an uncited sentence:
 # similarity search ranks them below long docs on the same topic.

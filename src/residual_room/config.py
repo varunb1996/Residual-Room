@@ -46,6 +46,8 @@ class PublicationConfig(BaseModel):
     default_segment: str
     docs: dict[str, str]
     explainers: dict[str, Explainer]
+    site: dict[str, str]
+    whatsapp_templates: dict[str, str]
     operational_sources: list[str]
     schedule: Schedule
     corrections: list[Correction]

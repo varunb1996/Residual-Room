@@ -192,6 +192,113 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/campaigns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Campaigns */
+        get: operations["list_campaigns_api_campaigns_get"];
+        put?: never;
+        /** Create Campaign */
+        post: operations["create_campaign_api_campaigns_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/campaigns/{campaign_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel */
+        post: operations["cancel_api_campaigns__campaign_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pieces/{piece_id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Preview */
+        get: operations["preview_api_pieces__piece_id__preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/subscribers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Subscribers */
+        get: operations["list_subscribers_api_subscribers_get"];
+        put?: never;
+        /** Add Subscriber */
+        post: operations["add_subscriber_api_subscribers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/whatsapp/inbound": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Whatsapp Inbound
+         * @description Mock: the subscriber messaged us, which opens the 24-hour free-form window.
+         */
+        post: operations["whatsapp_inbound_api_whatsapp_inbound_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/whatsapp/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Whatsapp Send */
+        post: operations["whatsapp_send_api_whatsapp_send_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -233,6 +340,43 @@ export interface components {
                 [key: string]: unknown;
             } | null;
         };
+        /** CampaignIn */
+        CampaignIn: {
+            /** Piece Id */
+            piece_id: number;
+            /** Segments */
+            segments: ("transitioning" | "practitioner")[];
+            /** Channels */
+            channels: ("email" | "telegram" | "whatsapp")[];
+            /** Scheduled At */
+            scheduled_at?: string | null;
+        };
+        /** CampaignOut */
+        CampaignOut: {
+            /** Id */
+            id: number;
+            /** Piece Id */
+            piece_id: number;
+            /** Piece Title */
+            piece_title: string;
+            /** Segments */
+            segments: string[];
+            /** Channels */
+            channels: string[];
+            /**
+             * Scheduled At
+             * Format: date-time
+             */
+            scheduled_at: string;
+            /** Status */
+            status: string;
+            /** Sent At */
+            sent_at: string | null;
+            /** Deliveries */
+            deliveries: components["schemas"]["DeliveryOut"][];
+            /** Clicks */
+            clicks: components["schemas"]["ClickCount"][];
+        };
         /** CheckOut */
         CheckOut: {
             /** Id */
@@ -268,6 +412,30 @@ export interface components {
             text: string;
             /** Corpus Version */
             corpus_version: string;
+        };
+        /** ClickCount */
+        ClickCount: {
+            /** Channel */
+            channel: string;
+            /** Segment */
+            segment: string;
+            /** Label */
+            label: string;
+            /** Clicks */
+            clicks: number;
+        };
+        /** DeliveryOut */
+        DeliveryOut: {
+            /** Channel */
+            channel: string;
+            /** Segment */
+            segment: string;
+            /** Recipient */
+            recipient: string;
+            /** Status */
+            status: string;
+            /** Error */
+            error: string | null;
         };
         /** EditIn */
         EditIn: {
@@ -431,6 +599,19 @@ export interface components {
              */
             updated_at: string;
         };
+        /** PreviewOut */
+        PreviewOut: {
+            /** Email Subject */
+            email_subject: string;
+            /** Email Html */
+            email_html: string;
+            /** Email Text */
+            email_text: string;
+            /** Telegram Html */
+            telegram_html: string;
+            /** Whatsapp Text */
+            whatsapp_text: string;
+        };
         /** ReasonIn */
         ReasonIn: {
             /** Reason */
@@ -453,6 +634,44 @@ export interface components {
             /** Support */
             support: string | null;
         };
+        /** SendResultOut */
+        SendResultOut: {
+            /** Status */
+            status: string;
+            /** Error */
+            error: string | null;
+            /** Rendered */
+            rendered: string | null;
+        };
+        /** SubscriberIn */
+        SubscriberIn: {
+            /**
+             * Segment
+             * @enum {string}
+             */
+            segment: "transitioning" | "practitioner";
+            /** Email */
+            email?: string | null;
+            /** Whatsapp */
+            whatsapp?: string | null;
+        };
+        /** SubscriberOut */
+        SubscriberOut: {
+            /** Id */
+            id: number;
+            /** Segment */
+            segment: string;
+            /** Email */
+            email: string | null;
+            /** Telegram Chat Id */
+            telegram_chat_id: string | null;
+            /** Whatsapp */
+            whatsapp: string | null;
+            /** Subscribed */
+            subscribed: boolean;
+            /** Whatsapp Last Inbound At */
+            whatsapp_last_inbound_at: string | null;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -465,6 +684,22 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** WhatsAppInbound */
+        WhatsAppInbound: {
+            /** Whatsapp */
+            whatsapp: string;
+            /** Text */
+            text: string;
+        };
+        /** WhatsAppSendIn */
+        WhatsAppSendIn: {
+            /** Whatsapp */
+            whatsapp: string;
+            /** Text */
+            text?: string | null;
+            /** Template */
+            template?: string | null;
         };
     };
     responses: never;
@@ -830,6 +1065,240 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JobOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_campaigns_api_campaigns_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignOut"][];
+                };
+            };
+        };
+    };
+    create_campaign_api_campaigns_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CampaignIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_api_campaigns__campaign_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaign_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_api_pieces__piece_id__preview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                piece_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_subscribers_api_subscribers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriberOut"][];
+                };
+            };
+        };
+    };
+    add_subscriber_api_subscribers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubscriberIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriberOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    whatsapp_inbound_api_whatsapp_inbound_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WhatsAppInbound"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriberOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    whatsapp_send_api_whatsapp_send_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WhatsAppSendIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SendResultOut"];
                 };
             };
             /** @description Validation Error */

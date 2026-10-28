@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, type PieceSummary } from "./api";
+import Campaigns from "./Campaigns";
 import Generate from "./Generate";
 import NewPiece from "./NewPiece";
 import PieceView from "./PieceView";
@@ -8,6 +9,7 @@ export default function App() {
   const [pieces, setPieces] = useState<PieceSummary[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [creating, setCreating] = useState<"paste" | "generate" | null>(null);
+  const [screen, setScreen] = useState<"review" | "campaigns">("review");
   const opened = useCallback((id: number) => {
     setCreating(null);
     setSelected(id);
@@ -22,11 +24,30 @@ export default function App() {
     refresh();
   }, [refresh]);
 
+  const tabs = (
+    <nav className="tabs">
+      {(["review", "campaigns"] as const).map((t) => (
+        <button key={t} className={`tab ${screen === t ? "active" : ""}`} onClick={() => setScreen(t)}>
+          {t === "review" ? "Review" : "Campaigns"}
+        </button>
+      ))}
+    </nav>
+  );
+
+  if (screen === "campaigns") {
+    return (
+      <div className="app single">
+        <header className="topbar"><span className="brand">Residual Room</span>{tabs}</header>
+        <main className="main"><Campaigns /></main>
+      </div>
+    );
+  }
+
   return (
     <div className="app">
       <header className="topbar">
         <span className="brand">Residual Room</span>
-        <span className="muted">Review</span>
+        {tabs}
       </header>
       <aside className="sidebar">
         <button className="primary wide" onClick={() => { setCreating("generate"); setSelected(null); }}>

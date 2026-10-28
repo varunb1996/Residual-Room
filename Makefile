@@ -1,4 +1,4 @@
-.PHONY: setup fetch ingest query generate eval client web migrate run test
+.PHONY: setup fetch ingest query generate eval client web migrate run worker test
 
 setup:
 	uv sync
@@ -38,6 +38,10 @@ migrate:
 
 run:
 	uv run uvicorn residual_room.api.main:app --reload
+
+# Sends due campaigns and polls the Telegram bot (keep running alongside `make run`).
+worker:
+	uv run python -u -m residual_room.worker
 
 test:
 	uv run pytest

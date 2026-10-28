@@ -9,6 +9,16 @@ class Settings(BaseSettings):
 
     database_url: str
 
+    # Channels (Prompt 7). All optional: a channel without its key reports
+    # "not configured" on send instead of failing at startup.
+    resend_api_key: str | None = None
+    email_from: str = "Residual Room <onboarding@resend.dev>"
+    test_emails: str = ""  # comma-separated; mail never goes anywhere else
+    telegram_bot_token: str | None = None
+    telegram_test_chat_id: str | None = None
+    # Not "localhost": browsers may try IPv6 ::1 first, where uvicorn isn't listening.
+    public_base_url: str = "http://127.0.0.1:8000"
+
     @field_validator("database_url")
     @classmethod
     def use_psycopg3(cls, url: str) -> str:
@@ -18,6 +28,10 @@ class Settings(BaseSettings):
             if url.startswith(prefix):
                 return "postgresql+psycopg://" + url.removeprefix(prefix)
         return url
+
+    @property
+    def test_email_list(self) -> set[str]:
+        return {e.strip().lower() for e in self.test_emails.split(",") if e.strip()}
 
 
 @lru_cache
