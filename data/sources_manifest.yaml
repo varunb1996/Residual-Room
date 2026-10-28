@@ -15,7 +15,7 @@ internal:
   - {id: int-brand-guide, title: Brand Guide v1, status: current, license: own, commit_allowed: true, path: docs/brand-guide.md}
   - {id: int-content-policy, title: Content Policy v1, status: current, license: own, commit_allowed: true, path: docs/content-policy.md}
   - {id: int-schedule-v0, title: Publishing Schedule v0 (Tuesdays), status: superseded, superseded_on: 2026-11-01, license: own, commit_allowed: true, trap: stale_schedule, path: docs/editorial/schedule-v0.md}
-  - {id: int-schedule-v1, title: Publishing Schedule v1 (Thursdays 9:00 IST, Issue 1 on 2026-11-05), status: current, license: own, commit_allowed: true, path: docs/editorial/schedule-v1.md}
+  - {id: int-schedule-v1, title: "Publishing Schedule v1 (Thursdays 9:00 IST, Issue 1 on 2026-11-05)", status: current, license: own, commit_allowed: true, path: docs/editorial/schedule-v1.md}
   - {id: int-series, title: Series definitions, status: current, license: own, commit_allowed: true, path: docs/editorial/series.md}
   - {id: int-subscription, title: Subscription rules, status: current, license: own, commit_allowed: true, path: docs/editorial/subscription.md}
   - {id: int-corrections, title: Corrections policy, status: current, license: own, commit_allowed: true, path: docs/editorial/corrections.md}

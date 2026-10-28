@@ -51,6 +51,20 @@ def test_repo_sources_have_small_include_lists(manifest):
     assert all(1 <= len(s.include) <= 5 for s in repos)
 
 
+def test_no_entry_has_stray_keys_from_unquoted_commas():
+    # An unquoted comma inside a YAML flow mapping silently splits a title
+    # into a shorter title plus a junk key (found 2026-10-28 on int-schedule-v1).
+    import yaml
+
+    from residual_room.corpus.manifest import MANIFEST_PATH
+
+    known = {"id", "title", "status", "license", "commit_allowed", "path", "superseded_on", "trap", "note",
+             "topic", "kind", "url", "license_verified", "fetch_url", "include", "ref"}
+    raw = yaml.safe_load(MANIFEST_PATH.read_text(encoding="utf-8"))
+    for entry in raw["internal"] + raw["external"]:
+        assert set(entry) <= known, f"{entry['id']}: unexpected keys {set(entry) - known}"
+
+
 def test_alias_to_unknown_source_is_rejected(tmp_path):
     path = tmp_path / "m.yaml"
     path.write_text("external:\n  - {id: a, ref: missing}\n", encoding="utf-8")

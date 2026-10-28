@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "started_at": "2026-10-28T14:53:49",
+    "split": "custom",
+    "cases": 2,
+    "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "generator_model": "openai/gpt-oss-20b",
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "corpus_version": "corpus-v1",
+    "git_commit": "aa1acc9 (uncommitted changes)",
+    "cache": "on",
+    "committable_only": false,
+    "duration_s": 22
+  },
+  "results": [
+    {
+      "id": "STL-04",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P2"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "New issues every Thursday at 10:00 AM IST.",
+          "evidence": null
+        },
+        {
+          "rule": "P2",
+          "reason": "contradicts a current source: The current schedule states issues are published Thursdays at 9:00 AM IST, while the sentence claims 10:00 AM IST.",
+          "segment_text": "New issues every Thursday at 10:00 AM IST.",
+          "evidence": "int-schedule-v1#0000"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "New issues every Thursday at 10:00 AM IST.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "STL-05",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "New issues every Thursday at 9:00 AM IST.",
+          "citations": [
+            "int-schedule-v1"
+          ]
+        }
+      ]
+    }
+  ]
+}
