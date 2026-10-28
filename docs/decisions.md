@@ -1,0 +1,54 @@
+# Decisions log
+
+## 2026-10-25 — Scoping (from grill session)
+- Brief: broad "AI marketing & knowledge orchestration platform" scoped to a grounded content engine with an eval harness. Portfolio project, solo, ~4 weeks at 12–15 hrs/week.
+- Organization: Residual Room, the owner's own English AI-education publication (newsletters + explainers).
+- Segments: transitioning engineers, practitioners.
+- Languages: English only (owner cannot verify technical content in other languages).
+- Grounding: claim-level citations, exemption list, LLM judge calibrated on owner's labels, judge model ≠ generator model.
+- Corpus: license-filtered manifest + fetch script; internal docs (brand guide, policy, editorial) plus traps (superseded schedule, seeded correction).
+- New topics: added through a propose → approve → ingest → generate flow, never fetched at generation time.
+- Channels: email live, Telegram live, WhatsApp mock.
+- Metrics: tracked clicks and subscriptions; seeded data labelled.
+- Approval: deterministic state machine, hard blocks, logged overrides, web review screen.
+- Stack: FastAPI, Postgres+pgvector, React (Vite) served by FastAPI, generated TS client, uv, render.yaml.
+- Football: week-4 config swap to prove reusability (first to cut).
+
+## 2026-10-28 — Orientation (Prompt 0)
+
+### Layout and build order
+- Repo layout approved: `src/residual_room/` package (corpus, llm, generation, checker, evaluation, workflow, channels, analytics, api), `web/`, `config/`, `corpus/` (committed), `corpus_local/` (gitignored), `eval/fixtures/`, `eval/results/`.
+- `config/publication.yaml` holds the structured values the deterministic checks need (avoid-list, CTA patterns, exempt types, segments, doc paths). A test asserts its avoid-list matches the brand guide, so the two can't drift. The football swap is a second config file.
+- Build order: checker + eval harness come **before** generation. The eval cases are hand-written text, so the never-cut checker gets measured first, and generation is built against a working checker.
+
+### Citations and scoring
+- Claims may cite a source ID or a chunk ID. A source-level cite is judged against the best-matching chunks within that source.
+- Eval scoring: the verdict must match exactly, and the expected rules must be a subset of the predicted rules (expected ⊆ predicted). Extra predicted rules are reported separately, not counted as errors.
+- Dev/test split of the eval cases, stratified by rule. Prompt changes only against dev; test is reported, never tuned on. "Calibrated judge" = per-rule agreement reported on the test split. Raw counts are reported alongside percentages.
+- P5 has two parts: deterministic (a cited chunk is superseded) and semantic (a claim matches a superseded chunk better than a current one). Check-time retrieval includes superseded chunks; generation-time retrieval excludes them.
+- P5 also labels the document-level rule "first issue after a correction must carry a notice" (STL-10). The rule itself comes from `docs/editorial/corrections.md`, not the content policy; the P5 label is kept to match the eval. STL-10 gets a fixture newsletter in `eval/fixtures/`.
+- STL cases have no segment; they default to `practitioner`.
+
+### Frozen-doc amendments (owner-approved)
+- Content policy v1.1: P1 covers "technical or operational factual claims". Internal docs are citable for operational facts (schedule, pricing, series, subscription).
+- Brand guide v1.1: a "read next" pointer is not a CTA. Added as exempt type `read_next`, and listed in the policy's citation-exempt list for consistency.
+
+### Eval label and text changes (owner-approved)
+- POL-07: expected rules `[P6, S1]` → `[P6]` (mislabelled; neither phrase is on the avoid list).
+- STL-06: text changed to "…why retrieval fails because of chunking and near-duplicate documents." (old text also fit exp-005). Label unchanged.
+- CLN-01: jargon defined for transitioning readers ("dense index (a store of text embeddings)", "pretrained generator (a language model that writes the answer)").
+- CLN-06: "change their minds" → "change their verdict" (S2).
+
+### Corpus
+- corpus-v1 uses manifest statuses as written; a scripted correction replay (v1 → v2) is optional, later.
+- Only exp-003 v1 and v2 enter corpus-v1 among the explainers. Claude drafts both (~300 words; v1 has the wrong claim, v2 the correction with a dated note per corrections.md); the owner reviews and approves. Other explainers are outputs; approved ones may enter a later corpus version.
+- Manifest gets a `fetch_url` field (data, not policy) for the Anthology/TACL versions. Each URL is verified to resolve before use. HTML is preferred over PDF where it exists (e.g. arXiv HTML for MT-Bench).
+- Each whole-repo source gets an include-list of 2–5 files relevant to the six topics, approved by the owner before fetching.
+- Chunks carry the canonical source ID; aliases (e.g. `ext-litm-for-t3`) resolve to it.
+- A test asserts key MT-Bench table numbers (65.0, 23.8, 8.7 from Tables 2–3) survive intact in chunks.
+- `make eval` requires `make fetch` first (documented in the README). CI runs only cases whose sources are committable.
+
+### Later prompts
+- WhatsApp mock follows Prompt 7: template-only outside the 24-hour window, plus opt-in.
+- State machine (finalized at Prompt 6): a hard-blocked item moves to `in_review` with a blocked flag; overrides happen only in `in_review`, by the reviewer, with a reason; `rejected → draft`.
+- Model choices (generator, judge, embeddings) are asked at Prompts 1–3.

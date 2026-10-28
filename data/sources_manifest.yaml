@@ -1,0 +1,53 @@
+# Residual Room: source manifest (v1)
+# commit_allowed: true only when the license permits redistribution (CC BY, MIT, Apache-2.0, own).
+# Everything else is fetched locally by the fetch script and never committed.
+# license_verified: checked 2026-10-25 (repo LICENSE files; arXiv license labels; ACL Anthology CC BY 4.0 policy).
+# Unverified sources default to commit_allowed: false.
+# Rule of thumb: papers published at ACL venues (ACL, EMNLP, NAACL, EACL, TACL) are CC BY 4.0 in the
+# ACL Anthology. Prefer the Anthology version over arXiv when one exists.
+
+internal:
+  - {id: int-brand-guide, title: Brand Guide v1, status: current, license: own, commit_allowed: true}
+  - {id: int-content-policy, title: Content Policy v1, status: current, license: own, commit_allowed: true}
+  - {id: int-schedule-v0, title: Publishing Schedule v0 (Tuesdays), status: superseded, superseded_on: 2026-11-01, license: own, commit_allowed: true, trap: stale_schedule}
+  - {id: int-schedule-v1, title: Publishing Schedule v1 (Thursdays 9:00 IST, Issue 1 on 2026-11-05), status: current, license: own, commit_allowed: true}
+  - {id: int-series, title: Series definitions, status: current, license: own, commit_allowed: true}
+  - {id: int-subscription, title: Subscription rules, status: current, license: own, commit_allowed: true}
+  - {id: int-corrections, title: Corrections policy, status: current, license: own, commit_allowed: true}
+  - {id: exp-003-v1, title: "Why retrieval fails (original)", status: superseded, license: own, commit_allowed: true, trap: seeded_correction, note: "written after corpus is built"}
+  - {id: exp-003-v2, title: "Why retrieval fails (corrected)", status: current, license: own, commit_allowed: true}
+
+external:
+  # Topic 1: Embeddings and semantic search (First Principles)
+  - {id: ext-sbert-paper, topic: 1, kind: paper, title: "Sentence-BERT (Reimers & Gurevych, EMNLP 2019)", url: "https://arxiv.org/abs/1908.10084", license: "CC BY 4.0 (ACL Anthology, EMNLP 2019)", license_verified: true, commit_allowed: true, note: "use Anthology version"}
+  - {id: ext-sbert-repo, topic: 1, kind: docs, title: "sentence-transformers docs", url: "https://github.com/UKPLab/sentence-transformers", license: "Apache-2.0", license_verified: true, commit_allowed: true}
+  - {id: ext-hf-course, topic: 1, kind: tutorial, title: "Hugging Face course", url: "https://github.com/huggingface/course", license: "Apache-2.0", license_verified: true, commit_allowed: true}
+
+  # Topic 2: RAG end to end (First Principles)
+  - {id: ext-rag-paper, topic: 2, kind: paper, title: "Retrieval-Augmented Generation (Lewis et al., NeurIPS 2020)", url: "https://arxiv.org/abs/2005.11401", license: "arXiv perpetual non-exclusive (not redistributable)", license_verified: true, commit_allowed: false, note: "local fetch only unless license page says CC BY"}
+  - {id: ext-dpr-paper, topic: 2, kind: paper, title: "Dense Passage Retrieval (Karpukhin et al., EMNLP 2020)", url: "https://arxiv.org/abs/2004.04906", license: "CC BY 4.0 (ACL Anthology, EMNLP 2020)", license_verified: true, commit_allowed: true, note: "use Anthology version"}
+  - {id: ext-llamaindex, topic: 2, kind: docs, title: "LlamaIndex docs", url: "https://github.com/run-llama/llama_index", license: "MIT", license_verified: true, commit_allowed: true}
+  - {id: ext-openai-cookbook, topic: 2, kind: tutorial, title: "OpenAI Cookbook (RAG and embeddings notebooks)", url: "https://github.com/openai/openai-cookbook", license: "MIT", license_verified: true, commit_allowed: true}
+  - {id: ext-anthropic-cookbook, topic: 2, kind: tutorial, title: "Anthropic cookbook (retrieval notebooks)", url: "https://github.com/anthropics/claude-cookbooks", license: "MIT", license_verified: true, commit_allowed: true, note: "old anthropic-cookbook URL also resolves; same MIT license"}
+
+  # Topic 3: Why retrieval fails (Failure Modes; seeded correction topic)
+  - {id: ext-langchain-splitters, topic: 3, kind: docs, title: "LangChain text splitters docs", url: "https://github.com/langchain-ai/langchain", license: "MIT", license_verified: true, commit_allowed: true}
+  - {id: ext-rag-survey, topic: 3, kind: paper, title: "RAG for LLMs: A Survey (Gao et al., 2023)", url: "https://arxiv.org/abs/2312.10997", license: "not confirmed; treated as non-redistributable", license_verified: false, commit_allowed: false}
+  - {id: ext-litm-for-t3, topic: 3, kind: paper, ref: ext-litm-paper, note: "reused for long-context failure section"}
+
+  # Topic 4: LLM-as-judge biases (Failure Modes)
+  - {id: ext-fair-evaluators, topic: 4, kind: paper, title: "LLMs are not Fair Evaluators (Wang et al., ACL 2024)", url: "https://arxiv.org/abs/2305.17926", license: "CC BY 4.0 (ACL Anthology, ACL 2024)", license_verified: true, commit_allowed: true}
+  - {id: ext-geval, topic: 4, kind: paper, title: "G-Eval (Liu et al., EMNLP 2023)", url: "https://arxiv.org/abs/2303.16634", license: "CC BY 4.0 (ACL Anthology, EMNLP 2023)", license_verified: true, commit_allowed: true}
+  - {id: ext-ragas-paper, topic: 4, kind: paper, title: "RAGAS (Es et al., EACL 2024 demo)", url: "https://arxiv.org/abs/2309.15217", license: "CC BY 4.0 (ACL Anthology, EACL 2024 demos)", license_verified: true, commit_allowed: true}
+  - {id: ext-ragas-repo, topic: 4, kind: docs, title: "Ragas docs", url: "https://github.com/explodinggradients/ragas", license: "Apache-2.0", license_verified: true, commit_allowed: true}
+
+  # Topic 5: Lost in the Middle (Paper to Practice)
+  - {id: ext-litm-paper, topic: 5, kind: paper, title: "Lost in the Middle (Liu et al., TACL 2024)", url: "https://arxiv.org/abs/2307.03172", license: "CC BY 4.0 (TACL)", license_verified: true, commit_allowed: true, note: "use TACL published version, not arXiv v1/v2"}
+  - {id: ext-litm-code, topic: 5, kind: code, title: "lost-in-the-middle code and data", url: "https://github.com/nelson-liu/lost-in-the-middle", license: "MIT", license_verified: true, commit_allowed: true}
+
+  # Topic 6: Judging LLM-as-a-Judge (Paper to Practice)
+  - {id: ext-mtbench-paper, topic: 6, kind: paper, title: "Judging LLM-as-a-Judge with MT-Bench (Zheng et al., NeurIPS 2023)", url: "https://arxiv.org/abs/2306.05685", license: "arXiv perpetual non-exclusive (not redistributable)", license_verified: true, commit_allowed: false, note: "local fetch only unless license page says CC BY"}
+  - {id: ext-fastchat, topic: 6, kind: code, title: "FastChat (MT-Bench implementation)", url: "https://github.com/lm-sys/FastChat", license: "Apache-2.0", license_verified: true, commit_allowed: true}
+
+# Verification note: repo licenses cover the repo contents; if docs are pulled from a separate docs site, recheck.
+# Gaps: topics 1, 3, 5 need 1-2 more sources each to reach about 30 total.

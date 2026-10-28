@@ -1,0 +1,151 @@
+# Residual Room: eval set, part 2 (grounding + clean), 28 of 50 cases
+# Built from source text read on 2026-10-25: MT-Bench paper (ext-mtbench-paper, full text),
+# Lost in the Middle (ext-litm-paper, abstract + body excerpts), RAG paper (ext-rag-paper, abstract + intro).
+# evidence = where in the source the claim is (or isn't) supported. Check each one against the fetched text.
+# Coverage gap: topics 1 (embeddings) and 3 (retrieval failures) have no grounding cases yet.
+
+grounding_cases:
+  - id: GRD-01
+    text: "MT-Bench contains 80 multi-turn questions across 8 categories [cite:ext-mtbench-paper]."
+    expected: {verdict: pass, rules: []}
+    evidence: "§2.2: 8 categories, 10 questions each"
+  - id: GRD-02
+    text: "MT-Bench contains 100 multi-turn questions across 8 categories [cite:ext-mtbench-paper]."
+    expected: {verdict: block, rules: [P2]}
+    evidence: "§2.2 says 80"
+  - id: GRD-03
+    text: "MT-Bench covers categories like writing, coding and math."
+    expected: {verdict: block, rules: [P1]}
+    note: "true claim, missing citation"
+  - id: GRD-04
+    text: "In the paper's expert study, GPT-4 agreed with human labelers 85% of the time on non-tie votes, slightly above the 81% agreement between humans [cite:ext-mtbench-paper]."
+    expected: {verdict: pass, rules: []}
+    evidence: "§4.2 and Table 5, setup S2"
+  - id: GRD-05
+    text: "GPT-4 agreed with human experts 95% of the time [cite:ext-mtbench-paper]."
+    expected: {verdict: block, rules: [P2]}
+    evidence: "95% appears in Table 5, but for GPT-4 pairwise vs GPT-4 single grading, not vs humans"
+    note: "hard case: the number exists in the source, attached to the wrong comparison"
+  - id: GRD-06
+    text: "The authors proved that LLM judges prefer their own outputs [cite:ext-mtbench-paper]."
+    expected: {verdict: block, rules: [P1]}
+    evidence: "§3.3: authors say their data cannot determine whether self-enhancement bias exists"
+  - id: GRD-07
+    text: "GPT-4 showed about a 10% higher win rate for its own answers, but the authors say their data can't confirm a self-enhancement bias [cite:ext-mtbench-paper]."
+    expected: {verdict: pass, rules: []}
+    evidence: "§3.3, self-enhancement paragraph"
+  - id: GRD-08
+    text: "When the answer order was swapped, Claude-v1 gave a consistent verdict only 23.8% of the time [cite:ext-mtbench-paper]."
+    expected: {verdict: pass, rules: []}
+    evidence: "Table 2, default prompt"
+  - id: GRD-09
+    text: "When the answer order was swapped, GPT-4 stayed consistent 85% of the time [cite:ext-mtbench-paper]."
+    expected: {verdict: block, rules: [P2]}
+    evidence: "Table 2: 65.0% (default prompt)"
+  - id: GRD-10
+    text: "The paper's conservative fix for position bias: run the judge twice with the order swapped, and only count a win if both runs agree [cite:ext-mtbench-paper]."
+    expected: {verdict: pass, rules: []}
+    evidence: "§3.4, swapping positions"
+  - id: GRD-11
+    text: "GPT-4 fell for the repetitive-list verbosity attack 91.3% of the time [cite:ext-mtbench-paper]."
+    expected: {verdict: block, rules: [P2]}
+    evidence: "Table 3: GPT-4 8.7%; 91.3% is Claude-v1 and GPT-3.5"
+    note: "hard case: right number, wrong model"
+  - id: GRD-12
+    text: "Few-shot examples raised GPT-4's consistency under order swaps from 65.0% to 77.5% [cite:ext-mtbench-paper]."
+    expected: {verdict: pass, rules: []}
+    evidence: "§3.4 and Table 13"
+  - id: GRD-13
+    text: "Models use information best when it sits at the start or end of the context [cite:ext-mtbench-paper]."
+    expected: {verdict: block, rules: [P1]}
+    note: "true claim, wrong source (citation precision failure)"
+  - id: GRD-14
+    text: "Models use information best when it sits at the start or end of the context [cite:ext-litm-paper]."
+    expected: {verdict: pass, rules: []}
+    evidence: "abstract"
+  - id: GRD-15
+    text: "Lost in the Middle shows that explicitly long-context models solve the middle-of-context problem [cite:ext-litm-paper]."
+    expected: {verdict: block, rules: [P1]}
+    evidence: "abstract says degradation holds even for explicitly long-context models"
+  - id: GRD-16
+    segment: transitioning
+    text: "A useful mental model: like a reader skimming a long doc, models tend to use what's at the start and end best and lose track of the middle [cite:ext-litm-paper]."
+    expected: {verdict: pass, rules: []}
+    note: "boundary: simplification that stays accurate"
+  - id: GRD-17
+    segment: transitioning
+    text: "In short, models ignore the middle of your prompt entirely [cite:ext-litm-paper]."
+    expected: {verdict: block, rules: [P1]}
+    evidence: "paper reports degradation, not total failure"
+    note: "simplification that becomes false"
+  - id: GRD-18
+    text: "Adding more retrieved documents stopped helping well before the retriever stopped finding relevant ones [cite:ext-litm-paper]."
+    expected: {verdict: pass, rules: []}
+    evidence: "body: performance saturates long before retriever recall (NaturalQuestions-Open)"
+  - id: GRD-19
+    text: "The original RAG paper pairs a pretrained seq2seq generator with a DPR retriever over a dense Wikipedia index [cite:ext-rag-paper]."
+    expected: {verdict: pass, rules: []}
+    evidence: "abstract and §2.2"
+  - id: GRD-20
+    text: "On FEVER, RAG came within 1% of state-of-the-art pipeline models [cite:ext-rag-paper]."
+    expected: {verdict: block, rules: [P2]}
+    evidence: "intro: within 4.3%"
+
+clean_cases:
+  # Whole short pieces that should pass every check. They measure false positives.
+  - id: CLN-01
+    segment: transitioning
+    channel: email
+    text: |
+      Hi there,
+      This week in First Principles: how retrieval-augmented generation works. The original RAG paper combines a pretrained generator (a language model that writes the answer) with a retriever that searches a dense index (a store of text embeddings) of Wikipedia [cite:ext-rag-paper].
+      Read the explainer.
+      — Residual Room
+    note: "revised 2026-10-28: jargon defined for transitioning readers so the case is truly clean (S4)"
+  - id: CLN-02
+    segment: practitioner
+    channel: email
+    text: |
+      Failure Modes this week: your LLM judge is less stable than you think. Swap the answer order and Claude-v1 kept its verdict only 23.8% of the time; GPT-4 managed 65.0% [cite:ext-mtbench-paper].
+      Read the explainer.
+      — Residual Room
+  - id: CLN-03
+    segment: practitioner
+    channel: telegram
+    text: "Paper to Practice: Lost in the Middle. Accuracy is highest when the answer sits at the start or end of the context, and drops in the middle [cite:ext-litm-paper]. Read the explainer."
+  - id: CLN-04
+    segment: practitioner
+    channel: email
+    text: |
+      Paper to Practice: Judging LLM-as-a-Judge. The authors found GPT-4 agreed with expert labelers 85% of the time on non-tie votes [cite:ext-mtbench-paper].
+      We think that number gets over-quoted: it excludes ties, and the paper's own position-bias results show how much the setup matters.
+      Read the source.
+    note: "boundary: marked opinion next to a cited number"
+  - id: CLN-05
+    segment: practitioner
+    channel: email
+    text: |
+      Correction: our explainer on retrieval failures originally said Lost in the Middle tested only GPT-3.5-Turbo. It tested several open and closed models. We fixed it on 10 November [cite:exp-003-v2] [cite:int-corrections].
+    note: "passing counterpart to STL-10"
+  - id: CLN-06
+    segment: practitioner
+    channel: email
+    text: |
+      Subject: Why your judge flips its verdict
+      Preview: Swap the answer order and many LLM judges change their verdict [cite:ext-mtbench-paper].
+    note: "revised 2026-10-28: 'change their minds' replaced to avoid S2 (anthropomorphizing)"
+  - id: CLN-07
+    segment: transitioning
+    channel: email
+    text: |
+      Welcome to Residual Room!
+      New issues arrive Thursdays at 9:00 AM IST [cite:int-schedule-v1]. It's free, and every email has an unsubscribe link [cite:int-subscription].
+      — Residual Room
+  - id: CLN-08
+    segment: transitioning
+    channel: email
+    text: |
+      New to evals? An "LLM judge" is a language model used to grade other models' answers. One known weakness is position bias: some judges favor whichever answer they see first [cite:ext-mtbench-paper].
+      Read next: our First Principles explainer on RAG.
+
+expected_for_all_clean_cases: {verdict: pass, rules: []}

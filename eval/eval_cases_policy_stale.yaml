@@ -1,0 +1,127 @@
+# Residual Room: eval set, part 1 (policy + stale information), 22 of 50 cases
+# expected.verdict: block (hard rule) | warn (soft rule only) | pass
+# Boundary cases (verdict: pass) exist to measure false positives on each rule.
+# [cite:<id>] marks a citation attached by the generator; ids match sources_manifest.yaml.
+
+seeded_facts:
+  schedule_current: "Weekly, Thursdays 9:00 AM IST; Issue 1 on Thursday 2026-11-05 (int-schedule-v1)"
+  schedule_superseded: "Tuesdays (int-schedule-v0, superseded 2026-11-01)"
+  series_map: {exp-001: First Principles, exp-002: First Principles, exp-003: Failure Modes, exp-004: Failure Modes, exp-005: Paper to Practice, exp-006: Paper to Practice}
+  seeded_correction:
+    explainer: exp-003
+    v1_claim: "Lost in the Middle tested only GPT-3.5-Turbo"
+    v2_claim: "Lost in the Middle tested several open and closed models"
+    corrected_on: 2026-11-10
+    first_issue_after_correction: "Issue 2, 2026-11-12 (must carry a correction notice)"
+
+policy_cases:
+  - id: POL-01
+    rule: P3
+    segment: transitioning
+    text: "Finish this series and you'll be job-ready as an AI engineer in 30 days."
+    expected: {verdict: block, rules: [P3]}
+  - id: POL-02
+    rule: P3
+    segment: practitioner
+    text: "Engineers who master RAG evaluation are landing much higher-paying roles."
+    expected: {verdict: block, rules: [P3]}
+    note: "implied salary outcome, no explicit number"
+  - id: POL-03
+    rule: P3
+    segment: transitioning
+    text: "This series won't make you job-ready on its own. It's one piece of a longer path."
+    expected: {verdict: pass, rules: []}
+    note: "boundary: mentions jobs without promising an outcome"
+  - id: POL-04
+    rule: P4
+    segment: practitioner
+    text: "Agents will replace most junior developers by 2028."
+    expected: {verdict: block, rules: [P4]}
+  - id: POL-05
+    rule: P4
+    segment: practitioner
+    text: "Some researchers argue long-context models will make retrieval unnecessary [cite:ext-litm-paper]. We're not convinced: their own results show accuracy drops when the answer sits mid-context."
+    expected: {verdict: pass, rules: []}
+    note: "boundary: attributed view plus our marked opinion"
+  - id: POL-06
+    rule: P6
+    segment: practitioner
+    text: "Word is that one major lab is quietly training a retrieval-native model for release next month."
+    expected: {verdict: block, rules: [P6]}
+  - id: POL-07
+    rule: P6
+    segment: practitioner
+    text: "LangChain is a bloated mess that only amateurs still use."
+    expected: {verdict: block, rules: [P6]}
+    note: "relabelled 2026-10-28: S1 removed; neither phrase is on the brand guide's avoid list"
+  - id: POL-08
+    rule: S1
+    segment: transitioning
+    text: "Reranking is a game-changer. Honestly, it feels like magic."
+    expected: {verdict: warn, rules: [S1]}
+  - id: POL-09
+    rule: S2
+    segment: transitioning
+    text: "The model understands your documents and wants to find the best answer for you."
+    expected: {verdict: warn, rules: [S2]}
+  - id: POL-10
+    rule: S3
+    segment: practitioner
+    text: "Read the full explainer here. And while you're at it, subscribe and reply with your toughest eval question."
+    expected: {verdict: warn, rules: [S3]}
+  - id: POL-11
+    rule: S4
+    segment: transitioning
+    text: "Add a cross-encoder reranker on top of ColBERT-style late interaction to fix recall."
+    expected: {verdict: warn, rules: [S4]}
+  - id: POL-12
+    rule: S4
+    segment: practitioner
+    text: "Add a cross-encoder reranker on top of ColBERT-style late interaction to fix recall."
+    expected: {verdict: pass, rules: []}
+    note: "boundary: same text as POL-11, practitioner segment, so jargon is allowed"
+
+stale_and_ops_cases:
+  - id: STL-01
+    rule: P5
+    text: "New issues land every Tuesday. See you next week!"
+    expected: {verdict: block, rules: [P5], stale_source: int-schedule-v0}
+  - id: STL-02
+    rule: P5
+    text: "Residual Room goes out Tuesday mornings at 9:00 AM IST."
+    expected: {verdict: block, rules: [P5], stale_source: int-schedule-v0}
+  - id: STL-03
+    rule: P2
+    text: "Issue 1 arrives on Tuesday, 3 November."
+    expected: {verdict: block, rules: [P2, P5]}
+  - id: STL-04
+    rule: P2
+    text: "New issues every Thursday at 10:00 AM IST."
+    expected: {verdict: block, rules: [P2]}
+    note: "right day, wrong time"
+  - id: STL-05
+    rule: P2
+    text: "New issues every Thursday at 9:00 AM IST [cite:int-schedule-v1]."
+    expected: {verdict: pass, rules: []}
+  - id: STL-06
+    rule: P1
+    # text revised 2026-10-28: "on long documents" also fit exp-005 (Paper to Practice)
+    text: "This week in Paper to Practice: why retrieval fails because of chunking and near-duplicate documents."
+    expected: {verdict: block, rules: [P1], note: "exp-003 belongs to Failure Modes"}
+  - id: STL-07
+    rule: P5
+    text: "As we covered, Lost in the Middle tested only GPT-3.5-Turbo [cite:exp-003-v1]."
+    expected: {verdict: block, rules: [P5], stale_source: exp-003-v1}
+  - id: STL-08
+    rule: P5
+    text: "Lost in the Middle tested several open and closed models [cite:exp-003-v2]."
+    expected: {verdict: pass, rules: []}
+  - id: STL-09
+    rule: P1
+    text: "Upgrade to Residual Room Pro for early access to deep dives."
+    expected: {verdict: block, rules: [P1], note: "contradicts int-subscription: no paid tier"}
+  - id: STL-10
+    rule: P5
+    scope: document
+    text: "[Issue 2, 2026-11-12, full newsletter with no correction notice]"
+    expected: {verdict: block, rules: [P5], note: "first issue after the exp-003 correction must carry a notice"}
