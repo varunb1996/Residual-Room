@@ -94,6 +94,8 @@ class PieceDetail(PieceSummary):
     issue_date: date | None
     version: int
     text: str
+    source: str  # pasted | generated
+    generation: dict | None  # generator model, corpus version, chunks given, problems
     check: CheckOut | None
     blockers: list[int]  # blocking hits still without an override
     audit: list[AuditOut]
@@ -220,6 +222,7 @@ def _detail(s: Session, piece_id: int) -> PieceDetail:
     audit = s.scalars(select(AuditEvent).where(AuditEvent.piece_id == piece_id).order_by(AuditEvent.id))
     return PieceDetail(
         **_summary(s, piece).model_dump(), issue_date=piece.issue_date, version=version.n,
-        text=version.text, check=check, blockers=blockers,
+        text=version.text, source=version.source, generation=version.generation,
+        check=check, blockers=blockers,
         audit=[AuditOut.model_validate(a, from_attributes=True) for a in audit],
     )

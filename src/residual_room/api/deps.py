@@ -6,7 +6,7 @@ from functools import lru_cache
 
 from sqlalchemy.orm import Session
 
-from residual_room.checker.types import CheckReport
+from residual_room.checker.types import CheckReport, Segment
 from residual_room.db.session import get_engine
 from residual_room.workflow.service import Checker
 
@@ -28,11 +28,13 @@ def _checker_deps() -> dict:
     return default_checker()
 
 
-def real_checker(text: str, segment: str, issue_date: date | None) -> tuple[CheckReport, str, str]:
+def real_checker(
+    text: str, segment: str, issue_date: date | None, segments: list[Segment] | None = None
+) -> tuple[CheckReport, str, str]:
     from residual_room.checker.run import check
 
     deps = _checker_deps()
-    report = check(text, reader_segment=segment, issue_date=issue_date, **deps)
+    report = check(text, segments=segments, reader_segment=segment, issue_date=issue_date, **deps)
     return report, deps["judge"].model, deps["retriever"].version
 
 

@@ -62,6 +62,22 @@ def test_operational_sources_are_small_internal_docs():
         assert estimate_tokens(text) <= MAX_TOKENS  # one chunk each, cheap to always include
 
 
+def test_explainers_match_series_doc():
+    text = (REPO_ROOT / "docs" / "editorial" / "series.md").read_text(encoding="utf-8")
+    rows = re.findall(r"^\| (exp-\d{3}) \| (.+?) \| (.+?) \|$", text, re.M)
+    assert {eid: (topic, series) for eid, topic, series in rows} == {
+        eid: (e.topic, e.series) for eid, e in get_config().explainers.items()
+    }
+
+
+def test_explainer_source_topics_exist_in_manifest():
+    from residual_room.corpus.manifest import load_manifest
+
+    topics = {s.topic for s in load_manifest().external}
+    for e in get_config().explainers.values():
+        assert set(e.source_topics) <= topics
+
+
 def test_default_segment_is_a_known_segment():
     cfg = get_config()
     assert cfg.default_segment in cfg.segments

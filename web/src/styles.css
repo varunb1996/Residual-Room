@@ -92,6 +92,7 @@ button:hover { border-color: var(--accent); }
 button:disabled { opacity: .5; cursor: not-allowed; }
 button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 button.wide { width: 100%; }
+.paste-btn { margin-top: 6px; }
 .small-btn { font-size: 12px; padding: 2px 8px; margin-left: 8px; }
 .actions { display: flex; gap: 8px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
 

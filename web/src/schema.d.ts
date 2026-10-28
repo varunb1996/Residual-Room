@@ -141,6 +141,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/explainers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Explainers */
+        get: operations["explainers_api_explainers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start Generation */
+        post: operations["start_generation_api_generate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Job */
+        get: operations["get_job_api_jobs__job_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -223,6 +274,33 @@ export interface components {
             /** Text */
             text: string;
         };
+        /** ExplainerOut */
+        ExplainerOut: {
+            /** Id */
+            id: string;
+            /** Topic */
+            topic: string;
+            /** Series */
+            series: string;
+        };
+        /** GenerateIn */
+        GenerateIn: {
+            /** Explainer */
+            explainer: string;
+            /**
+             * Segment
+             * @enum {string}
+             */
+            segment: "transitioning" | "practitioner";
+            /**
+             * Kind
+             * @default newsletter
+             * @enum {string}
+             */
+            kind: "newsletter" | "explainer_summary";
+            /** Issue Date */
+            issue_date?: string | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -244,6 +322,30 @@ export interface components {
             evidence: string | null;
             /** Override Reason */
             override_reason: string | null;
+        };
+        /** JobOut */
+        JobOut: {
+            /** Id */
+            id: number;
+            /** Status */
+            status: string;
+            /** Explainer */
+            explainer: string;
+            /** Segment */
+            segment: string;
+            /** Kind */
+            kind: string;
+            /** Piece Id */
+            piece_id: number | null;
+            /** Error */
+            error: string | null;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Finished At */
+            finished_at: string | null;
         };
         /** OverrideIn */
         OverrideIn: {
@@ -297,6 +399,12 @@ export interface components {
             version: number;
             /** Text */
             text: string;
+            /** Source */
+            source: string;
+            /** Generation */
+            generation: {
+                [key: string]: unknown;
+            } | null;
             check: components["schemas"]["CheckOut"] | null;
             /** Blockers */
             blockers: number[];
@@ -638,6 +746,90 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChunkOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    explainers_api_explainers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExplainerOut"][];
+                };
+            };
+        };
+    };
+    start_generation_api_generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_job_api_jobs__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOut"];
                 };
             };
             /** @description Validation Error */

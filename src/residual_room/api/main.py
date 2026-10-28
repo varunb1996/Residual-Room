@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import Engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
+from residual_room.api.generation import router as generation_router
 from residual_room.api.pieces import router as pieces_router
 from residual_room.corpus.manifest import REPO_ROOT
 from residual_room.db.session import get_engine
@@ -13,6 +14,7 @@ WEB_DIST = REPO_ROOT / "web" / "dist"
 
 app = FastAPI(title="Residual Room")
 app.include_router(pieces_router)
+app.include_router(generation_router)
 
 
 @app.exception_handler(WorkflowError)

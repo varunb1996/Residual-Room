@@ -403,6 +403,114 @@
         }
       }
     },
+    "/api/explainers": {
+      "get": {
+        "tags": [
+          "generation"
+        ],
+        "summary": "Explainers",
+        "operationId": "explainers_api_explainers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExplainerOut"
+                  },
+                  "type": "array",
+                  "title": "Response Explainers Api Explainers Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate": {
+      "post": {
+        "tags": [
+          "generation"
+        ],
+        "summary": "Start Generation",
+        "operationId": "start_generation_api_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/{job_id}": {
+      "get": {
+        "tags": [
+          "generation"
+        ],
+        "summary": "Get Job",
+        "operationId": "get_job_api_jobs__job_id__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -622,6 +730,72 @@
         ],
         "title": "EditIn"
       },
+      "ExplainerOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "topic": {
+            "type": "string",
+            "title": "Topic"
+          },
+          "series": {
+            "type": "string",
+            "title": "Series"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "topic",
+          "series"
+        ],
+        "title": "ExplainerOut"
+      },
+      "GenerateIn": {
+        "properties": {
+          "explainer": {
+            "type": "string",
+            "title": "Explainer"
+          },
+          "segment": {
+            "type": "string",
+            "enum": [
+              "transitioning",
+              "practitioner"
+            ],
+            "title": "Segment"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "newsletter",
+              "explainer_summary"
+            ],
+            "title": "Kind",
+            "default": "newsletter"
+          },
+          "issue_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issue Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "explainer",
+          "segment"
+        ],
+        "title": "GenerateIn"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -698,6 +872,82 @@
           "override_reason"
         ],
         "title": "HitOut"
+      },
+      "JobOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "explainer": {
+            "type": "string",
+            "title": "Explainer"
+          },
+          "segment": {
+            "type": "string",
+            "title": "Segment"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "piece_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Piece Id"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "explainer",
+          "segment",
+          "kind",
+          "piece_id",
+          "error",
+          "started_at",
+          "finished_at"
+        ],
+        "title": "JobOut"
       },
       "OverrideIn": {
         "properties": {
@@ -826,6 +1076,22 @@
             "type": "string",
             "title": "Text"
           },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "generation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generation"
+          },
           "check": {
             "anyOf": [
               {
@@ -863,6 +1129,8 @@
           "issue_date",
           "version",
           "text",
+          "source",
+          "generation",
           "check",
           "blockers",
           "audit"

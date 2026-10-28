@@ -1,4 +1,4 @@
-.PHONY: setup fetch ingest query eval client web migrate run test
+.PHONY: setup fetch ingest query generate eval client web migrate run test
 
 setup:
 	uv sync
@@ -14,6 +14,11 @@ ingest:
 # make query Q="position bias in LLM judges"
 query:
 	uv run python scripts/query.py "$(Q)"
+
+# make generate EXP=exp-004 SEGMENT=practitioner [KIND=newsletter]  (saves a draft for review)
+KIND ?= newsletter
+generate:
+	uv run python -m residual_room.generation.generate --explainer $(EXP) --segment $(SEGMENT) --kind $(KIND) --save
 
 # make eval SPLIT=test   (needs make fetch + make ingest, and the judge's API key)
 eval:

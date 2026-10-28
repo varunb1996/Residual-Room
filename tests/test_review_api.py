@@ -15,7 +15,7 @@ from residual_room.db.session import get_engine
 pytestmark = pytest.mark.db
 
 
-def fake_checker(text, segment, issue_date):
+def fake_checker(text, segment, issue_date, segments=None):
     if "FAIL" in text:
         raise RuntimeError("judge unreachable")
     segs = [Segment("New issues land every Tuesday.", "claim"), Segment("Read the explainer.", "exempt", "cta")]
@@ -118,6 +118,56 @@ def test_failed_checks_return_the_piece_to_draft(client):
     piece = submit(client, pid)
     assert piece["state"] == "draft" and piece["check"]["status"] == "failed"
     assert "judge unreachable" in piece["check"]["error"]
+
+
+def test_generated_piece_keeps_its_segments_and_checks_use_them(client):
+    from residual_room.api.generation import get_generator
+    from residual_room.generation.generate import Generated
+    from residual_room.generation.schema import GenOutput, render_text
+
+    out = GenOutput.model_validate({"segments": [
+        {"type": "exempt", "exempt_type": "framing", "text": "Failure Modes this week."},
+        {"type": "claim", "text": "Claude-v1 kept its verdict 23.8% of the time.",
+         "chunk_ids": ["ext-mtbench-paper#0015"]},
+        {"type": "exempt", "exempt_type": "cta", "text": "Read the explainer."},
+        {"type": "exempt", "exempt_type": "sign_off", "text": "— Residual Room"},
+    ]})
+    meta = {"generator_model": "fake-gen", "corpus_version": "corpus-v1", "retrieved_chunks": ["ext-mtbench-paper#0015"]}
+    app.dependency_overrides[get_generator] = lambda: (lambda e, s, k: Generated(out, render_text(out), [], meta))
+    seen = {}
+
+    def recording_checker(text, segment, issue_date, segments=None):
+        seen["segments"] = segments
+        return fake_checker(text, segment, issue_date)
+
+    app.dependency_overrides[get_checker] = lambda: recording_checker
+
+    r = client.post("/api/generate", json={"explainer": "exp-004", "segment": "practitioner"})
+    assert r.status_code == 202
+    job = client.get(f"/api/jobs/{r.json()['id']}").json()
+    assert job["status"] == "done"
+    client.created.append(job["piece_id"])
+
+    piece = client.get(f"/api/pieces/{job['piece_id']}").json()
+    assert piece["source"] == "generated" and piece["state"] == "draft"
+    assert piece["generation"]["corpus_version"] == "corpus-v1"
+    assert "[cite:ext-mtbench-paper#0015]" in piece["text"]
+    submit(client, job["piece_id"])
+    assert [s.kind for s in seen["segments"]] == ["exempt", "claim", "exempt", "exempt"]
+    assert seen["segments"][1].citations == ("ext-mtbench-paper#0015",)
+
+
+def test_generation_failure_is_recorded_on_the_job(client):
+    from residual_room.api.generation import get_generator
+
+    def broken(e, s, k):
+        raise RuntimeError("generator timed out")
+
+    app.dependency_overrides[get_generator] = lambda: broken
+    r = client.post("/api/generate", json={"explainer": "exp-004", "segment": "practitioner"})
+    job = client.get(f"/api/jobs/{r.json()['id']}").json()
+    assert job["status"] == "failed" and "timed out" in job["error"] and job["piece_id"] is None
+    assert client.post("/api/generate", json={"explainer": "exp-999", "segment": "practitioner"}).status_code == 400
 
 
 def test_chunk_endpoint_returns_source_text(client):

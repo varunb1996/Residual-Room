@@ -11,7 +11,7 @@ from datetime import UTC, date, datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from residual_room.checker.types import CheckReport
+from residual_room.checker.types import CheckReport, Segment
 from residual_room.db.models import AuditEvent, CheckRun, Override, Piece, PieceVersion
 from residual_room.workflow.states import (
     Action,
@@ -21,8 +21,9 @@ from residual_room.workflow.states import (
     next_state,
 )
 
-# text, reader segment, issue date -> (report, judge model, corpus version)
-Checker = Callable[[str, str, date | None], tuple[CheckReport, str, str]]
+# text, reader segment, issue date, pre-made segments (generated pieces) or None
+#   -> (report, judge model, corpus version)
+Checker = Callable[[str, str, date | None, list[Segment] | None], tuple[CheckReport, str, str]]
 
 
 class WorkflowError(Exception):
@@ -86,6 +87,21 @@ def create_piece(
     return piece
 
 
+def create_generated_piece(
+    s: Session, title: str, kind: str, segment: str, issue_date: date | None, generated, actor: str = "system",
+) -> Piece:
+    """A draft from the generator. The version keeps the structured segments, the
+    corpus version and the chunks it was grounded on (CLAUDE.md principle 3)."""
+    piece = create_piece(s, title=title, kind=kind, segment=segment, text=generated.text,
+                         issue_date=issue_date, source="generated", actor=actor)
+    version = latest_version(s, piece.id)
+    version.segments = generated.output.model_dump()["segments"]
+    version.generation = generated.meta
+    if generated.problems:
+        _audit(s, piece, actor, "generation_problems", State.DRAFT, State.DRAFT, {"problems": generated.problems})
+    return piece
+
+
 def edit_piece(s: Session, piece_id: int, text: str, actor: str = "owner") -> Piece:
     piece = get_piece(s, piece_id, lock=True)
     before = piece.state
@@ -114,8 +130,13 @@ def run_checks(s: Session, run_id: int, checker: Checker) -> None:
     run = s.get(CheckRun, run_id)
     version = s.get(PieceVersion, run.version_id)
     piece = get_piece(s, version.piece_id)
+    segments = None
+    if version.segments is not None:  # generated: check the generator's segments as-is
+        from residual_room.generation.schema import GenOutput, to_check_segments
+
+        segments = to_check_segments(GenOutput.model_validate({"segments": version.segments}))
     try:
-        report, judge_model, corpus_version = checker(version.text, piece.segment, piece.issue_date)
+        report, judge_model, corpus_version = checker(version.text, piece.segment, piece.issue_date, segments)
     except Exception as exc:  # any failure must leave the piece editable, not stuck in checks
         piece = get_piece(s, version.piece_id, lock=True)
         run.status, run.error, run.finished_at = "failed", f"{type(exc).__name__}: {exc}", _now()

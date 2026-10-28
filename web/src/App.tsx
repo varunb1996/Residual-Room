@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, type PieceSummary } from "./api";
+import Generate from "./Generate";
 import NewPiece from "./NewPiece";
 import PieceView from "./PieceView";
 
 export default function App() {
   const [pieces, setPieces] = useState<PieceSummary[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
-  const [creating, setCreating] = useState(false);
+  const [creating, setCreating] = useState<"paste" | "generate" | null>(null);
+  const opened = useCallback((id: number) => {
+    setCreating(null);
+    setSelected(id);
+  }, []);
 
   const refresh = useCallback(async () => {
     const { data } = await api.GET("/api/pieces");
@@ -24,15 +29,18 @@ export default function App() {
         <span className="muted">Review</span>
       </header>
       <aside className="sidebar">
-        <button className="primary wide" onClick={() => { setCreating(true); setSelected(null); }}>
-          New piece
+        <button className="primary wide" onClick={() => { setCreating("generate"); setSelected(null); }}>
+          Generate
+        </button>
+        <button className="wide paste-btn" onClick={() => { setCreating("paste"); setSelected(null); }}>
+          Paste a draft
         </button>
         <ul className="piece-list">
           {pieces.map((p) => (
             <li key={p.id}>
               <button
                 className={`piece-item ${p.id === selected ? "active" : ""}`}
-                onClick={() => { setSelected(p.id); setCreating(false); }}
+                onClick={() => { setSelected(p.id); setCreating(null); }}
               >
                 <span className="piece-title">{p.title}</span>
                 <span className="piece-meta">
@@ -45,11 +53,11 @@ export default function App() {
         </ul>
       </aside>
       <main className="main">
-        {creating && (
-          <NewPiece
-            onCreated={(id) => { setCreating(false); setSelected(id); refresh(); }}
-            onCancel={() => setCreating(false)}
-          />
+        {creating === "paste" && (
+          <NewPiece onCreated={(id) => { opened(id); refresh(); }} onCancel={() => setCreating(null)} />
+        )}
+        {creating === "generate" && (
+          <Generate onCreated={(id) => { opened(id); refresh(); }} onCancel={() => setCreating(null)} />
         )}
         {!creating && selected !== null && <PieceView key={selected} id={selected} onChanged={refresh} />}
         {!creating && selected === null && (

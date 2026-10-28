@@ -92,13 +92,14 @@ class RoleLLM:
         cache: ResponseCache | None = None,
         transport: httpx.BaseTransport | None = None,
         retries: int = 3,
+        timeout: float = 180,
     ) -> None:
         self.role = role
         self.endpoints = endpoints
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.cache = cache or ResponseCache()
-        self.http = httpx.Client(timeout=180, transport=transport)
+        self.http = httpx.Client(timeout=timeout, transport=transport)
         self.retries = retries
 
     @property

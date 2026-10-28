@@ -21,7 +21,11 @@ roles:
     - {provider: openrouter, model: "nvidia/nemotron-3-ultra-550b-a55b:free"}  # fallback (~50 req/day)
   generator:
     - {provider: nvidia, model: openai/gpt-oss-20b}
+    - {provider: openrouter, model: "google/gemma-4-31b-it:free"}  # fallback, third family; best effort
 
+# timeout (seconds) per request. gpt-oss-20b on NVIDIA took 74–315 s per call
+# in testing (queueing), so the generator gets 10 minutes. max_tokens leaves
+# room for a reasoning model's hidden reasoning before the JSON answer.
 defaults:
-  judge: {temperature: 0, max_tokens: 2000}
-  generator: {temperature: 0.4, max_tokens: 4000}
+  judge: {temperature: 0, max_tokens: 2000, timeout: 180}
+  generator: {temperature: 0.4, max_tokens: 6000, timeout: 600}

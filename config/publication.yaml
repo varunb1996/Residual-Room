@@ -13,6 +13,18 @@ docs:
   schedule: docs/editorial/schedule-v1.md
   corrections: docs/editorial/corrections.md
 
+# What generation can write about (docs/editorial/series.md; drift-tested).
+# source_topics: manifest topic numbers whose sources are always eligible for
+# retrieval. subtopics: extra retrieval queries (optional, editable).
+explainers:
+  exp-001: {topic: Embeddings and semantic search, series: First Principles, source_topics: [1]}
+  exp-002: {topic: RAG end to end, series: First Principles, source_topics: [2]}
+  exp-003: {topic: "Why retrieval fails (chunking, lost context, near-duplicates)", series: Failure Modes, source_topics: [3]}
+  exp-004: {topic: LLM-as-judge biases, series: Failure Modes, source_topics: [4],
+            subtopics: [position bias, verbosity bias, self-enhancement bias]}
+  exp-005: {topic: Lost in the Middle (Liu et al.), series: Paper to Practice, source_topics: [5]}
+  exp-006: {topic: Judging LLM-as-a-Judge (Zheng et al.), series: Paper to Practice, source_topics: [6]}
+
 # The publication's operational facts (schedule, series, subscription, corrections).
 # Tiny docs, always shown to the judge in full when it checks an uncited sentence:
 # similarity search ranks them below long docs on the same topic.

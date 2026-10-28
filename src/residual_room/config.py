@@ -31,6 +31,13 @@ class Correction(BaseModel):
     notice_pattern: str
 
 
+class Explainer(BaseModel):
+    topic: str
+    series: str
+    source_topics: list[int]
+    subtopics: list[str] = []
+
+
 class PublicationConfig(BaseModel):
     model_config = {"frozen": True}
 
@@ -38,6 +45,7 @@ class PublicationConfig(BaseModel):
     segments: list[str]
     default_segment: str
     docs: dict[str, str]
+    explainers: dict[str, Explainer]
     operational_sources: list[str]
     schedule: Schedule
     corrections: list[Correction]
