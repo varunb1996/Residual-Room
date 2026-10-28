@@ -8,12 +8,13 @@
       citation half of P1; whether the source supports the claim needs the judge)
 """
 
+import re
 from dataclasses import dataclass
 
 from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session
 
-from residual_room.checker.claims import count_ctas
+from residual_room.checker.claims import count_ctas, normalize
 from residual_room.checker.types import RuleHit, Segment
 from residual_room.config import PublicationConfig, get_config
 from residual_room.corpus.manifest import Manifest
@@ -51,7 +52,7 @@ class StatusLookup:
 def check_s1(segments: list[Segment], config: PublicationConfig) -> list[RuleHit]:
     hits = []
     for i, seg in enumerate(segments):
-        for word in dict.fromkeys(m.lower() for m in config.avoid_regex.findall(seg.text)):
+        for word in dict.fromkeys(m.lower() for m in config.avoid_regex.findall(normalize(seg.text))):
             hits.append(RuleHit("S1", f"hype word from the avoid-list: {word!r}", i, word))
     return hits
 
@@ -77,8 +78,48 @@ def check_citations(segments: list[Segment], lookup: StatusLookup) -> list[RuleH
     return hits
 
 
+# Words that say nothing about which explainer is meant.
+_POINTER_NOISE = {"read", "next", "our", "the", "a", "an", "on", "of", "and", "to", "in", "for", "how",
+                  "why", "explainer", "series", "end", "et", "al"}
+
+
+def check_read_next(segments: list[Segment], config: PublicationConfig) -> list[RuleHit]:
+    """A read-next pointer must lead to an explainer that exists (P1 otherwise).
+
+    A lookup, not a judgment, so it's code: the LLM judge won't call a missing
+    explainer a contradiction ("no passage says it doesn't exist"). The pointer
+    matches if it names an explainer id, or shares a topic word with an
+    explainer in the series it names (any series if it names none).
+    """
+    explainers = config.explainers
+    series_words = {w for e in explainers.values() for w in _words(e.series)}
+    hits = []
+    for i, seg in enumerate(segments):
+        if seg.exempt_type != "read_next":
+            continue
+        text = normalize(seg.text).lower()
+        if any(eid in text for eid in explainers):
+            continue
+        named = {e.series for e in explainers.values() if e.series.lower() in text}
+        candidates = [e for e in explainers.values() if not named or e.series in named]
+        words = _words(text) - series_words
+        if not any(words & _words(e.topic) for e in candidates):
+            where = f" in {', '.join(sorted(named))}" if named else ""
+            hits.append(RuleHit("P1", f"read-next points to an explainer that doesn't exist{where}", i, "int-series"))
+    return hits
+
+
+def _words(text: str) -> set[str]:
+    return set(re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", text.lower())) - _POINTER_NOISE
+
+
 def run_deterministic(
     text: str, segments: list[Segment], lookup: StatusLookup, config: PublicationConfig | None = None
 ) -> list[RuleHit]:
     config = config or get_config()
-    return check_s1(segments, config) + check_s3(text, config) + check_citations(segments, lookup)
+    return (
+        check_s1(segments, config)
+        + check_s3(text, config)
+        + check_citations(segments, lookup)
+        + check_read_next(segments, config)
+    )

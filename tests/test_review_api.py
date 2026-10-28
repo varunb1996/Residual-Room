@@ -153,7 +153,7 @@ def test_generated_piece_keeps_its_segments_and_checks_use_them(client):
     assert piece["generation"]["corpus_version"] == "corpus-v1"
     assert "[cite:ext-mtbench-paper#0015]" in piece["text"]
     submit(client, job["piece_id"])
-    assert [s.kind for s in seen["segments"]] == ["exempt", "claim", "exempt", "exempt"]
+    assert [s.kind for s in seen["segments"]] == ["candidate", "claim", "exempt", "exempt"]
     assert seen["segments"][1].citations == ("ext-mtbench-paper#0015",)
 
 

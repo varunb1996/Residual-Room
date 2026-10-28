@@ -45,9 +45,27 @@ def test_render_text_and_checker_segments():
     out = GenOutput.model_validate(GOOD)
     assert render_text(out).splitlines()[1].endswith("23.8% of the time. [cite:ext-mtbench-paper#0015]")
     segs = to_check_segments(out)
+    # framing has no confirming pattern, so the judge re-labels it; cta and sign-off are confirmed.
     assert [(s.kind, s.exempt_type) for s in segs] == [
-        ("exempt", "framing"), ("claim", None), ("exempt", "cta"), ("exempt", "sign_off")]
+        ("candidate", None), ("claim", None), ("exempt", "cta"), ("exempt", "sign_off")]
     assert segs[1].citations == ("ext-mtbench-paper#0015",)
+
+
+def test_generator_labels_are_only_trusted_when_a_pattern_confirms_them():
+    out = GenOutput.model_validate({"segments": [
+        seg("exempt", "LLM judges sometimes prefer longer or earlier answers.", "framing"),
+        seg("exempt", "We think judges need calibration.", "opinion"),
+        seg("exempt", "Upgrade to Pro for more.", "cta"),
+        seg("exempt", "Read next: our First Principles explainer on RAG.", "read_next"),
+        seg("exempt", "Thanks for reading.", "sign_off"),
+    ]})
+    assert [(s.kind, s.exempt_type) for s in to_check_segments(out)] == [
+        ("candidate", None),  # a disguised claim goes to the judge
+        ("exempt", "opinion"),
+        ("candidate", None),  # not one of the four CTAs
+        ("exempt", "read_next"),
+        ("candidate", None),  # not the brand sign-off
+    ]
 
 
 def test_invalid_draft_gets_one_corrective_retry():
@@ -73,3 +91,5 @@ def test_prompt_carries_the_frozen_docs_and_segment_tone():
     system, user = llm.calls[0]
     assert "Brand Guide" in system and "Content Policy" in system
     assert "Define every technical term" in user and "LLM-as-judge biases" in user
+    assert "- exp-002: RAG end to end (First Principles)" in user  # real read_next targets only
+    assert "- exp-004:" not in user  # not itself

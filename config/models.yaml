@@ -27,5 +27,5 @@ roles:
 # in testing (queueing), so the generator gets 10 minutes. max_tokens leaves
 # room for a reasoning model's hidden reasoning before the JSON answer.
 defaults:
-  judge: {temperature: 0, max_tokens: 2000, timeout: 180}
+  judge: {temperature: 0, max_tokens: 6000, timeout: 180}  # Nemotron reasons in plain text before the JSON
   generator: {temperature: 0.4, max_tokens: 6000, timeout: 600}

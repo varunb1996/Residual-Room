@@ -165,7 +165,13 @@ class RoleLLM:
                 time.sleep(2**attempt)
                 continue
             if r.status_code == 200:
-                content = (r.json()["choices"][0]["message"].get("content") or "").strip()
+                choice = r.json()["choices"][0]
+                if choice.get("finish_reason") == "length":
+                    # Cut off at max_tokens (reasoning models think first, then answer).
+                    # Not cached and not retried here: the same request would be cut
+                    # off again, so the next endpoint (fallback) gets a chance.
+                    raise LLMError(f"reply truncated at max_tokens={self.max_tokens}")
+                content = (choice["message"].get("content") or "").strip()
                 if not content:
                     raise LLMError("empty reply (max_tokens may be too low for a reasoning model)")
                 return content

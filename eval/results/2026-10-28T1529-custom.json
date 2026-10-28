@@ -1,0 +1,168 @@
+{
+  "meta": {
+    "started_at": "2026-10-28T15:29:34",
+    "split": "custom",
+    "cases": 4,
+    "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "generator_model": "openai/gpt-oss-20b",
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "corpus_version": "corpus-v1",
+    "git_commit": "56f9bde (uncommitted changes)",
+    "cache": "on",
+    "committable_only": false,
+    "duration_s": 230
+  },
+  "results": [
+    {
+      "id": "POL-01",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P3"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P3"
+      ],
+      "hits": [
+        {
+          "rule": "P3",
+          "reason": "Guarantees job readiness within a specific timeframe (30 days), which is a prohibited career outcome promise.",
+          "segment_text": "Finish this series and you'll be job-ready as an AI engineer in 30 days.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "Finish this series and you'll be job-ready as an AI engineer in 30 days.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-09",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "warn",
+      "expected_rules": [
+        "S2"
+      ],
+      "verdict": "warn",
+      "rules": [
+        "S2"
+      ],
+      "hits": [
+        {
+          "rule": "S2",
+          "reason": "The sentence anthropomorphizes the model by stating it \"understands\" and \"wants\" as if it has human cognition and intent.",
+          "segment_text": "The model understands your documents and wants to find the best answer for you.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "The model understands your documents and wants to find the best answer for you.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-11",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "warn",
+      "expected_rules": [
+        "S4"
+      ],
+      "verdict": "warn",
+      "rules": [
+        "S4"
+      ],
+      "hits": [
+        {
+          "rule": "S4",
+          "reason": "Uses undefined technical jargon ('cross-encoder reranker', 'ColBERT-style late interaction', 'recall' in the IR sense) without definitions for transitioning engineers new to AI.",
+          "segment_text": "Add a cross-encoder reranker on top of ColBERT-style late interaction to fix recall.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "Add a cross-encoder reranker on top of ColBERT-style late interaction to fix recall.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "CLN-08",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "warn",
+      "rules": [
+        "S2",
+        "S4"
+      ],
+      "hits": [
+        {
+          "rule": "S4",
+          "reason": "The term 'evals' is used without definition for transitioning engineers.",
+          "segment_text": "New to evals?",
+          "evidence": null
+        },
+        {
+          "rule": "S2",
+          "reason": "The phrase 'some judges favor' anthropomorphizes the model by attributing human-like preference.",
+          "segment_text": "One known weakness of LLM judges is position bias.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "framing",
+          "text": "New to evals?",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "An \"LLM judge\" is a language model used to grade other models' answers.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "One known weakness of LLM judges is position bias.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Some LLM judges favor whichever answer they see first.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "read_next",
+          "text": "Read next: our First Principles explainer on RAG.",
+          "citations": []
+        }
+      ]
+    }
+  ]
+}

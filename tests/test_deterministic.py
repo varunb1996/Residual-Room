@@ -99,3 +99,29 @@ def test_per_segment_verdicts():
     assert report.segment_verdict(0) == "warn"
     assert report.segment_verdict(1) == "block"
     assert report.verdict == "block"
+
+
+def test_unicode_hyphens_do_not_slip_past_word_lists(lookup):
+    # U+2011 non-breaking hyphen, as generators often write it.
+    report = check("Reranking is a game\u2011changer.", lookup)
+    assert report.rules == ["S1"]
+    # U+00A0 non-breaking space inside a CTA.
+    assert check("Read the\u00a0explainer.", lookup).segments[0].exempt_type == "cta"
+
+
+@pytest.mark.parametrize(
+    "pointer, ok",
+    [
+        ("Read next: our First Principles explainer on LLM-as-Judge.", False),  # piece 42: no such explainer
+        ("Read next: our First Principles explainer on RAG.", True),  # CLN-08
+        ("Read next: our Paper to Practice explainer on Lost in the Middle.", True),
+        ("Read next: exp-006.", True),
+        ("Read next: our Failure Modes explainer on embeddings.", False),  # topic exists, wrong series
+    ],
+)
+def test_read_next_must_point_to_an_existing_explainer(pointer, ok, lookup):
+    report = check(pointer, lookup)
+    assert report.segments[0].exempt_type == "read_next"
+    assert (report.rules == []) == ok
+    if not ok:
+        assert report.hits[0].rule == "P1" and report.hits[0].evidence == "int-series"

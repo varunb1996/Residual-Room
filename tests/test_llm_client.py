@@ -81,6 +81,19 @@ def test_falls_back_when_primary_is_not_found(tmp_path):
     assert calls == ["model-a", "model-b"]
 
 
+def test_truncated_reply_is_not_cached_and_falls_back(tmp_path):
+    def handler(req, n):
+        if json.loads(req.content)["model"] == "model-a":
+            return httpx.Response(200, json={"choices": [{"message": {"content": "Let me think..."},
+                                                          "finish_reason": "length"}]})
+        return reply('{"supported": true, "reason": "ok"}')
+
+    llm, calls = make_llm(handler, tmp_path, endpoints=("a", "b"))
+    assert llm.ask_json("sys", "user", Verdict).supported is True
+    assert calls == ["model-a", "model-b"]
+    assert len(list(tmp_path.glob("*.json"))) == 1  # only the complete answer was cached
+
+
 def test_retryable_status_is_retried(tmp_path):
     llm, calls = make_llm(lambda req, n: reply("", 503) if n == 1 else reply("ok"), tmp_path)
     llm.endpoints[0].limiter = RateLimiter(6000)

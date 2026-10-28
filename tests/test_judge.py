@@ -112,6 +112,15 @@ def test_policy_sees_the_original_sentence_once_for_split_claims():
     assert "[1]" not in policy_prompt
 
 
+def test_long_pieces_send_policy_rules_in_batches():
+    judge = FakeJudge(route())
+    segs = [Segment(f"Statement number {i}.", "exempt", "transition") for i in range(17)]
+    judge_segments(segs, judge, FakeRetriever([]), "practitioner")
+    policy_calls = [u for s, u in judge.calls if "content-policy rules" in s]
+    assert len(policy_calls) == 3  # 8 + 8 + 1
+    assert "[16] Statement number 16." in policy_calls[-1]
+
+
 def test_greetings_ctas_signoffs_are_not_sent_to_the_judge():
     judge = FakeJudge(route())
     segs = [Segment("Hi there,", "exempt", "greeting"), Segment("Read the explainer.", "exempt", "cta")]

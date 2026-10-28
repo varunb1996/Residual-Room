@@ -9,7 +9,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from residual_room.checker.claims import count_ctas
+from residual_room.checker.claims import count_ctas, pattern_exempt_type
 from residual_room.checker.types import Segment
 from residual_room.config import PublicationConfig
 
@@ -65,11 +65,22 @@ def render_text(out: GenOutput) -> str:
     return "\n".join(lines)
 
 
-def to_check_segments(out: GenOutput) -> list[Segment]:
-    """Generator output goes to the checker as-is: no splitting, no extraction."""
-    return [
-        Segment(s.text.strip(), "claim", citations=tuple(s.chunk_ids or []))
-        if s.type == "claim"
-        else Segment(s.text.strip(), "exempt", s.exempt_type)
-        for s in out.segments
-    ]
+def to_check_segments(out: GenOutput, config: PublicationConfig | None = None) -> list[Segment]:
+    """Generator output for the checker: no re-splitting, but its labels aren't trusted.
+
+    Claims stay claims (they must cite anyway). An exempt label stands only if a
+    deterministic pattern confirms the same type (greeting, cta, read_next,
+    sign_off, "We think…" opinion). Anything else, including every framing and
+    transition, becomes a candidate that the judge labels, so a factual claim
+    can't escape its citation by being called "framing" (judge ≠ generator).
+    """
+    segments = []
+    for s in out.segments:
+        text = s.text.strip()
+        if s.type == "claim":
+            segments.append(Segment(text, "claim", citations=tuple(s.chunk_ids or [])))
+        elif s.exempt_type and pattern_exempt_type(text, config) == s.exempt_type:
+            segments.append(Segment(text, "exempt", s.exempt_type))
+        else:
+            segments.append(Segment(text, "candidate"))
+    return segments

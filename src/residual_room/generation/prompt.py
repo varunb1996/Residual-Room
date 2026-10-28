@@ -60,10 +60,15 @@ def build_prompt(
         content_policy=(REPO_ROOT / docs["content_policy"]).read_text(encoding="utf-8"),
     )
     passages = "\n\n".join(f"[{h.chunk_id}] ({h.heading_path})\n{h.text}" for h in hits)
+    # read_next and series labels may only name explainers that exist.
+    explainers = "\n".join(
+        f"- {eid}: {e.topic} ({e.series})" for eid, e in config.explainers.items() if eid != explainer_id
+    )
     user = (
         f"Write: {STRUCTURE[kind]}\n"
         f"Topic: {explainer.topic} ({explainer_id}, series: {explainer.series})\n"
         f"Reader segment: {segment}. {SEGMENT_TONE[segment]}\n\n"
+        f"Other explainers (a read_next must point to one of these, by its topic and series):\n{explainers}\n\n"
         f"Passages:\n\n{passages}"
     )
     return system, user

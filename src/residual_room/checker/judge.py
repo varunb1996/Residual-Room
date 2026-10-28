@@ -53,6 +53,10 @@ Report only clear violations, one entry per sentence and rule.
 
 Reply with only JSON: {{"hits": [{{"index": <int>, "rule": "<rule id>", "reason": "<one sentence>"}}]}}  (an empty list if none)"""
 
+# Sentences per policy call. The judge reasons about every sentence before its
+# JSON; on a 17-sentence piece that ran past the output limit.
+POLICY_BATCH = 8
+
 SEGMENT_NOTES = {
     "transitioning": "These readers are engineers new to AI: apply S4 to any technical term used without a definition.",
     "practitioner": "These readers already build with AI: technical jargon is fine, so S4 does not apply.",
@@ -99,14 +103,14 @@ def judge_segments(
             passages = _dedupe(p for c in seg.citations for p in retriever.for_citation(c, seg.text))
             jobs.append(_guard(i, lambda i=i, s=seg, p=passages: _cited(i, s, p, judge, support)))
         elif seg.kind in ("claim", "statement") or seg.exempt_type == "framing":
+            # (read_next is checked deterministically against the explainer map:
+            # the judge won't treat a missing explainer as a contradiction.)
             passages = retriever.across_corpus(seg.text)
             jobs.append(_guard(i, lambda i=i, s=seg, p=passages: _uncited(i, s, p, judge)))
-    policy_ids = [
-        i for i, s in enumerate(segments)
-        if s.exempt_type not in ("greeting", "sign_off", "cta", "read_next")
-    ]
-    if policy_ids:
-        jobs.append(_guard(None, lambda: _policy(segments, policy_ids, reader_segment, judge)))
+    units = _policy_units(segments)
+    for k in range(0, len(units), POLICY_BATCH):
+        batch = units[k : k + POLICY_BATCH]
+        jobs.append(_guard(None, lambda b=batch: _policy(segments, b, reader_segment, judge)))
 
     with ThreadPoolExecutor(max_workers=max(1, judge.max_concurrency)) as pool:
         return [hit for hits in pool.map(lambda job: job(), jobs) for hit in hits]
@@ -143,19 +147,26 @@ def _uncited(i: int, seg: Segment, passages: list[Passage], judge) -> list[RuleH
     return hits
 
 
-def _policy(segments: list[Segment], ids: list[int], reader_segment: str, judge) -> list[RuleHit]:
+def _policy_units(segments: list[Segment]) -> list[int]:
+    """Segments the policy rules look at, one per original sentence.
+
+    Whole original sentences, not atomic claims: splitting can separate a term
+    from its definition ("position bias: some judges favor the first answer").
+    Each sentence is sent once, under the index of its first segment."""
+    units: dict[int | tuple, int] = {}
+    for i, s in enumerate(segments):
+        if s.exempt_type in ("greeting", "sign_off", "cta", "read_next"):
+            continue
+        key = ("s", s.sentence) if s.sentence is not None else i
+        units.setdefault(key, i)
+    return list(units.values())
+
+
+def _policy(segments: list[Segment], first: list[int], reader_segment: str, judge) -> list[RuleHit]:
     rule_ids = ["P3", "P4", "P6", "S2"] + (["S4"] if reader_segment == "transitioning" else [])
     system = POLICY_SYSTEM.format(
         rules=rules_text(rule_ids), segment=reader_segment, segment_note=SEGMENT_NOTES.get(reader_segment, "")
     )
-    # Judge whole original sentences, not atomic claims: splitting can separate a
-    # term from its definition ("position bias: some judges favor the first answer").
-    # Each sentence is sent once, under the index of its first segment.
-    units: dict[int | tuple, int] = {}
-    for i in ids:
-        key = ("s", segments[i].sentence) if segments[i].sentence is not None else i
-        units.setdefault(key, i)
-    first = list(units.values())
     user = "Sentences:\n" + "\n".join(
         f"[{i}] {segments[i].original or segments[i].text}" for i in first
     )
