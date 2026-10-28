@@ -1,0 +1,63 @@
+{
+  "meta": {
+    "started_at": "2026-10-28T14:20:28",
+    "split": "custom",
+    "cases": 1,
+    "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "generator_model": "openai/gpt-oss-20b",
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "corpus_version": "corpus-v1",
+    "git_commit": "c839493 (uncommitted changes)",
+    "cache": "on",
+    "committable_only": false,
+    "duration_s": 10
+  },
+  "results": [
+    {
+      "id": "CLN-02",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "framing",
+          "text": "Failure Modes this week: your LLM judge is less stable than you think.",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Swap the answer order and Claude-v1 kept its verdict only 23.8% of the time.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Swap the answer order and GPT-4 kept its verdict 65.0% of the time.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "cta",
+          "text": "Read the explainer.",
+          "citations": []
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "sign_off",
+          "text": "\u2014 Residual Room",
+          "citations": []
+        }
+      ]
+    }
+  ]
+}

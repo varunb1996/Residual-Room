@@ -131,3 +131,21 @@
 ### Live spot check (not the eval; that's the next step)
 - 15 cases run live: GRD-05, GRD-11, GRD-13, GRD-17, POL-12 (the five hard cases), POL-01, STL-01, STL-04, STL-05, STL-06, STL-09, STL-10, CLN-01, CLN-03, CLN-07. All 15 match their expected verdict and rules (expected ⊆ predicted).
 - Extra rules seen: P1 alongside P2 on number errors, S2 on "agreed", S2/S4 on GRD-17. Allowed by the scoring rule, but S2/S4 over-firing may cost precision and false warnings on clean cases. To be measured by the eval harness, not tuned per case.
+
+## 2026-10-28 — Eval harness (Prompt 5)
+- Frozen split `eval/split.yaml`: 21 dev / 29 test, stratified by first expected rule; the five hard cases and the single-case rules (P4, S1–S4) are test-only, so every rule is measured on test. Deterministic (hash order); the builder refuses to overwrite it, and a test fails if the file drifts from the builder. Prompt changes only against dev failures.
+- Metrics, all with raw counts and a ⚠ flag under 5 cases: lenient case accuracy (the agreed rule: verdict + expected ⊆ predicted), strict (exact rules), per-rule precision/recall (extra rules count as false positives here, so over-firing shows), pass-case false-positive rate, hard-case accuracy, blocking judge errors.
+- Results: `eval/results/<datetime>-<split>.md` + `.json`, headed with date, split, judge/generator/embedding models, corpus version, git commit, cache state.
+- `--committable-only` runs the 30 cases whose cited sources can be committed (CI subset).
+- First full run (2026-10-28, `eval/results/2026-10-28T1310-all.md`, judge Nemotron 3 Ultra, corpus-v1, 1,471 s): lenient 44/50 (88%), strict 32/50 (64%), pass-case false positives 4/23 (17%), hard cases 5/5. Six disagreements: two possibly mislabelled (POL-05, CLN-08) and four checker errors with proposed structural fixes, written up in the report for owner review.
+
+### Fixes after the first run (owner-approved: "all four fixes")
+- **Test contamination, on record:** three of the four fixes were found by looking at **test** failures (CLN-08, STL-03, POL-03/POL-09); only the citation-scope fix came from dev (CLN-05). Test scores from 2026-10-28T1351 onward are optimistic. The honest remedy is adding fresh held-out cases later.
+- Citation scope: an uncited claim inherits the citations of the next cited claim on the same line. Only claims inherit, never across lines; the judge still checks each claim. Segments record their line.
+- Policy rules judge the original sentence once, not each atomic claim, so a term stays next to its definition.
+- Uncited check: two booleans (contradicts current, matches superseded) instead of one relation, so a sentence can be both P5 and P2.
+- Extraction: "statement" now explicitly covers disclaimers about reader outcomes and descriptions of a model's mind, with a general tie-breaker ("could a source confirm or refute this?").
+- Bug found by the rerun: the extractor sometimes sends `"claims": null`; the schema now accepts it (it had turned CLN-02 into a blocking JUDGE error).
+- Second full run (`eval/results/2026-10-28T1351-all.md`, 1,695 s): lenient 44/50, strict 32/50, pass-case false positives 5/23, hard 5/5, one judge error (CLN-02, since fixed; rerun alone passes → corrected lenient 45/50). POL-03 and POL-09 fixed; GRD-16 newly flagged S2 on an explicit analogy; CLN-05 swapped its P1 for a P2 on an omitted year.
+- Proposed next (dev-motivated, not yet applied): numbers that omit detail (e.g. a year) aren't a P2 mismatch (CLN-05); explicitly framed analogies aren't S2 (GRD-16, and the brand guide encourages analogies).
+- Variance: with 50 cases, a ±1–2 case swing between runs is noise. Compare runs on the disagreement lists, not the headline number alone.

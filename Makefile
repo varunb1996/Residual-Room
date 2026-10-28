@@ -3,7 +3,8 @@
 setup:
 	uv sync
 
-# Stubs until their prompts land.
+SPLIT ?= all
+
 fetch:
 	uv run python -m residual_room.corpus.fetch
 
@@ -14,8 +15,9 @@ ingest:
 query:
 	uv run python scripts/query.py "$(Q)"
 
+# make eval SPLIT=test   (needs make fetch + make ingest, and the judge's API key)
 eval:
-	@echo make eval: not implemented yet - Prompt 5. Needs make fetch first.
+	uv run python -m residual_room.evaluation.run --split $(SPLIT)
 
 migrate:
 	uv run alembic upgrade head

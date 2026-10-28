@@ -53,6 +53,32 @@ def test_cta_label_only_stands_for_the_brand_guides_cta_types():
     assert out[0].kind == "statement"  # not an allowed CTA, so it gets checked
 
 
+def test_uncited_claims_inherit_a_later_citation_on_the_same_line_only():
+    text = ("It said X. It tested Y. We fixed it [cite:exp-003-v2].\n"
+            "Another line with an uncited fact.")
+    segs = split_segments(text)
+    out = extract(segs, FakeJudge(lambda s, u: {"sentences": [
+        {"index": i, "kind": "claim"} for i in candidate_indices(u)
+    ]}))
+    assert [s.citations for s in out] == [("exp-003-v2",)] * 3 + [()]
+
+
+def test_split_claims_remember_their_original_sentence():
+    segs = split_segments("Claude-v1 23.8%; GPT-4 65.0% [cite:ext-mtbench-paper].")
+    out = extract(segs, FakeJudge(lambda s, u: {"sentences": [
+        {"index": 0, "kind": "claim", "claims": ["Claude-v1 23.8%.", "GPT-4 65.0%."]},
+    ]}))
+    assert {s.original for s in out} == {"Claude-v1 23.8%; GPT-4 65.0%."}
+
+
+def test_null_claims_list_is_accepted():
+    segs = split_segments("Some framing.")
+    out = extract(segs, FakeJudge(lambda s, u: {"sentences": [
+        {"index": 0, "kind": "exempt", "exempt_type": "framing", "claims": None},
+    ]}))
+    assert out[0].exempt_type == "framing"
+
+
 def test_no_candidates_means_no_llm_call():
     judge = FakeJudge(lambda s, u: {})
     segs = split_segments("Hi there,\nRead the explainer.\n— Residual Room")

@@ -8,6 +8,7 @@ LLM claim extractor's job. Generator output is already segmented and skips this.
 """
 
 import re
+from dataclasses import replace
 
 from residual_room.checker.types import Segment
 from residual_room.config import PublicationConfig, get_config
@@ -21,10 +22,10 @@ SENTENCE_END = re.compile(r"(?<=[.!?])\s+")
 def split_segments(text: str, config: PublicationConfig | None = None) -> list[Segment]:
     config = config or get_config()
     segments = []
-    for line in text.splitlines():
+    for n, line in enumerate(text.splitlines()):
         for sentence in SENTENCE_END.split(line.strip()):
             if sentence:
-                segments.append(_label(sentence, config))
+                segments.append(replace(_label(sentence, config), line=n))
     return segments
 
 

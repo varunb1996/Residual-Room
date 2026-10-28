@@ -36,14 +36,12 @@ Reply with only JSON: {{"supported": true|false, "numbers": "none"|"match"|"mism
 
 UNCITED_SYSTEM = """You check a sentence that carries no citation against passages from the publication's own corpus (its schedule, series list, subscription rules and policies, and the sources it covers). Passages with status "superseded" are outdated versions kept on record.
 
-Decide "relation":
-- "consistent": the current passages agree with it, or it is a reasonable framing they support.
-- "contradicts_current": a current passage clearly says otherwise.
-- "matches_superseded": it repeats what a superseded passage says, where the current passages say something different.
-- "unrelated": the passages do not address it.
-Set "conflict_is_numeric" true if the conflict is about a number, date, time or day. Report a conflict only when a passage clearly states it.
+Answer two separate questions; both can be true at once:
+- "contradicts_current": does a current passage clearly say otherwise?
+- "matches_superseded": does it repeat something a superseded passage says, where the current passages say something different?
+Set "conflict_is_numeric" true if a conflict involves a number, date, time or day. Report a conflict only when a passage clearly states it; if the passages agree with the sentence or don't address it, both answers are false.
 
-Reply with only JSON: {"relation": "consistent"|"contradicts_current"|"matches_superseded"|"unrelated", "conflict_is_numeric": true|false, "evidence_chunk": "<id or null>", "reason": "<one sentence>"}"""
+Reply with only JSON: {"contradicts_current": true|false, "matches_superseded": true|false, "conflict_is_numeric": true|false, "evidence_chunk": "<id or null>", "reason": "<one sentence>"}"""
 
 POLICY_SYSTEM = """You check sentences from an AI-education newsletter against these content-policy rules:
 {rules}
@@ -68,7 +66,10 @@ class CitedVerdict(BaseModel):
 
 
 class UncitedVerdict(BaseModel):
-    relation: Literal["consistent", "contradicts_current", "matches_superseded", "unrelated"]
+    # Two booleans, not one relation: "Issue 1 arrives on Tuesday, 3 November"
+    # both contradicts the current schedule and echoes the superseded one (STL-03).
+    contradicts_current: bool
+    matches_superseded: bool
     conflict_is_numeric: bool = False
     evidence_chunk: str | None = None
     reason: str
@@ -124,15 +125,13 @@ def _uncited(i: int, seg: Segment, passages: list[Passage], judge) -> list[RuleH
     user = f"Sentence: {seg.text}\n\nCorpus passages:\n\n" + "\n\n".join(p.render() for p in passages)
     v = judge.ask_json(UNCITED_SYSTEM, user, UncitedVerdict)
     evidence = _valid_id(v.evidence_chunk, passages)
-    if v.relation == "matches_superseded":
-        hits = [RuleHit("P5", f"repeats a superseded source: {v.reason}", i, evidence)]
-        if v.conflict_is_numeric:
-            hits.append(RuleHit("P2", f"date or figure conflicts with the current source: {v.reason}", i, evidence))
-        return hits
-    if v.relation == "contradicts_current":
+    hits = []
+    if v.matches_superseded:
+        hits.append(RuleHit("P5", f"repeats a superseded source: {v.reason}", i, evidence))
+    if v.contradicts_current:
         rule = "P2" if v.conflict_is_numeric else "P1"
-        return [RuleHit(rule, f"contradicts a current source: {v.reason}", i, evidence)]
-    return []
+        hits.append(RuleHit(rule, f"contradicts a current source: {v.reason}", i, evidence))
+    return hits
 
 
 def _policy(segments: list[Segment], ids: list[int], reader_segment: str, judge) -> list[RuleHit]:
@@ -140,12 +139,22 @@ def _policy(segments: list[Segment], ids: list[int], reader_segment: str, judge)
     system = POLICY_SYSTEM.format(
         rules=rules_text(rule_ids), segment=reader_segment, segment_note=SEGMENT_NOTES.get(reader_segment, "")
     )
-    user = "Sentences:\n" + "\n".join(f"[{i}] {segments[i].text}" for i in ids)
+    # Judge whole original sentences, not atomic claims: splitting can separate a
+    # term from its definition ("position bias: some judges favor the first answer").
+    # Each sentence is sent once, under the index of its first segment.
+    units: dict[int | tuple, int] = {}
+    for i in ids:
+        key = ("s", segments[i].sentence) if segments[i].sentence is not None else i
+        units.setdefault(key, i)
+    first = list(units.values())
+    user = "Sentences:\n" + "\n".join(
+        f"[{i}] {segments[i].original or segments[i].text}" for i in first
+    )
     v = judge.ask_json(system, user, PolicyVerdict)
     return [
         RuleHit(h.rule, h.reason, h.index)
         for h in v.hits
-        if h.index in ids and h.rule in rule_ids  # drop anything the model invents
+        if h.index in first and h.rule in rule_ids  # drop anything the model invents
     ]
 
 

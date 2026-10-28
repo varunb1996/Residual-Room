@@ -6,27 +6,9 @@
 """
 
 import argparse
-import sys
-from pathlib import Path
 
-import yaml
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tests"))
-from eval_cases import eval_cases  # noqa: E402
-
-from residual_room.checker.run import check, default_checker  # noqa: E402
-from residual_room.corpus.manifest import REPO_ROOT  # noqa: E402
-
-FIXTURES = {"STL-10": REPO_ROOT / "eval" / "fixtures" / "stl-10-issue-2.md"}
-
-
-def load_case(case_id: str) -> dict:
-    case = dict(eval_cases()[case_id])
-    if case_id in FIXTURES:  # document-level case whose text lives in a fixture
-        _, front, body = FIXTURES[case_id].read_text(encoding="utf-8").split("---\n", 2)
-        meta = yaml.safe_load(front)
-        case.update(text=body, segment=meta["segment"], issue_date=meta["issue_date"])
-    return case
+from residual_room.checker.run import check, default_checker
+from residual_room.evaluation.cases import load_cases
 
 
 def print_report(label: str, report, expected=None) -> None:
@@ -56,14 +38,10 @@ def main() -> None:
     if args.text:
         print_report("text", check(args.text, reader_segment=args.segment, **deps))
     for case_id in args.cases:
-        case = load_case(case_id)
-        report = check(
-            case["text"],
-            reader_segment=case.get("segment"),
-            issue_date=case.get("issue_date"),
-            **deps,
-        )
-        print_report(case_id, report, case.get("expected", {"verdict": "pass", "rules": []}))
+        case = load_cases()[case_id]
+        report = check(case.text, reader_segment=case.segment, issue_date=case.issue_date, **deps)
+        expected = {"verdict": case.expected_verdict, "rules": list(case.expected_rules)}
+        print_report(case_id, report, expected)
 
 
 if __name__ == "__main__":

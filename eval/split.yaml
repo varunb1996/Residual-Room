@@ -1,0 +1,55 @@
+# Frozen dev/test split. Built once by `python -m residual_room.evaluation.split`.
+# Stratified by first expected rule; hard cases and single-case rules are in test.
+# Tune prompts only against dev failures; report test as the headline.
+dev:
+- CLN-01
+- CLN-04
+- CLN-05
+- CLN-07
+- GRD-02
+- GRD-03
+- GRD-04
+- GRD-06
+- GRD-07
+- GRD-10
+- GRD-16
+- GRD-19
+- GRD-20
+- POL-02
+- POL-06
+- STL-02
+- STL-04
+- STL-05
+- STL-08
+- STL-09
+- STL-10
+test:
+- CLN-02
+- CLN-03
+- CLN-06
+- CLN-08
+- GRD-01
+- GRD-05
+- GRD-08
+- GRD-09
+- GRD-11
+- GRD-12
+- GRD-13
+- GRD-14
+- GRD-15
+- GRD-17
+- GRD-18
+- POL-01
+- POL-03
+- POL-04
+- POL-05
+- POL-07
+- POL-08
+- POL-09
+- POL-10
+- POL-11
+- POL-12
+- STL-01
+- STL-03
+- STL-06
+- STL-07

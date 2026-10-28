@@ -44,8 +44,9 @@ def test_unsupported_cited_claim_is_p1_and_unknown_evidence_id_is_replaced():
     assert hit.rule == "P1" and hit.evidence == "ext-mtbench-paper#0016"
 
 
-def test_uncited_stale_claim_is_p5_plus_p2_when_a_date_conflicts():
-    judge = FakeJudge(route(uncited={"relation": "matches_superseded", "conflict_is_numeric": True,
+def test_uncited_claim_can_be_both_stale_p5_and_contradicting_p2():
+    judge = FakeJudge(route(uncited={"contradicts_current": True, "matches_superseded": True,
+                                     "conflict_is_numeric": True,
                                      "evidence_chunk": "int-schedule-v0#0000", "reason": "Tuesday is v0"}))
     seg = Segment("Issue 1 arrives on Tuesday, 3 November.", "claim")
     retriever = FakeRetriever([OLD_SCHEDULE])
@@ -55,12 +56,14 @@ def test_uncited_stale_claim_is_p5_plus_p2_when_a_date_conflicts():
 
 
 def test_framing_contradicting_series_is_p1_but_consistent_framing_passes():
-    contradicts = FakeJudge(route(uncited={"relation": "contradicts_current", "conflict_is_numeric": False,
+    contradicts = FakeJudge(route(uncited={"contradicts_current": True, "matches_superseded": False,
+                                           "conflict_is_numeric": False,
                                            "evidence_chunk": "int-series#0000", "reason": "Failure Modes"}))
     seg = Segment("This week in Paper to Practice: why retrieval fails.", "exempt", "framing")
     (hit,) = judge_segments([seg], contradicts, FakeRetriever([SERIES]), "practitioner")
     assert hit.rule == "P1"
-    consistent = FakeJudge(route(uncited={"relation": "consistent", "reason": "ok"}))
+    consistent = FakeJudge(route(uncited={"contradicts_current": False, "matches_superseded": False,
+                                          "reason": "ok"}))
     assert judge_segments([seg], consistent, FakeRetriever([SERIES]), "practitioner") == []
 
 
@@ -83,6 +86,21 @@ def test_s4_only_offered_for_transitioning_readers():
     assert "S4 —" in judge.calls[-1][0]
     judge_segments(seg, judge, FakeRetriever([]), "practitioner")
     assert "S4 —" not in judge.calls[-1][0]
+
+
+def test_policy_sees_the_original_sentence_once_for_split_claims():
+    original = "One known weakness is position bias: some judges favor whichever answer they see first."
+    segs = [
+        Segment("Position bias is a known weakness of LLM judges.", "claim",
+                citations=("x",), sentence=3, original=original),
+        Segment("Some LLM judges favor whichever answer they see first.", "claim",
+                citations=("x",), sentence=3, original=original),
+    ]
+    judge = FakeJudge(route(cited={"supported": True, "numbers": "none", "reason": "ok"}))
+    judge_segments(segs, judge, FakeRetriever([TABLE3]), "transitioning")
+    policy_prompt = judge.calls[-1][1]
+    assert policy_prompt.count(original) == 1 and "[0] One known weakness" in policy_prompt
+    assert "[1]" not in policy_prompt
 
 
 def test_greetings_ctas_signoffs_are_not_sent_to_the_judge():

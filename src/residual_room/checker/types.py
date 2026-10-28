@@ -22,6 +22,8 @@ class Segment:
     exempt_type: str | None = None
     citations: tuple[str, ...] = ()  # source or chunk ids, e.g. ext-litm-paper, ext-litm-paper#0007
     sentence: int | None = None  # index of the original sentence, when extraction split it
+    original: str | None = None  # that sentence's full text (policy rules judge whole sentences)
+    line: int | None = None  # line of the raw text it came from (citation scope)
 
 
 @dataclass(frozen=True)

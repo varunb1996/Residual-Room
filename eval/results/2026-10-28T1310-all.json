@@ -1,0 +1,1766 @@
+{
+  "meta": {
+    "started_at": "2026-10-28T13:10:54",
+    "split": "all",
+    "cases": 50,
+    "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "generator_model": "openai/gpt-oss-20b",
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "corpus_version": "corpus-v1",
+    "git_commit": "c839493 (uncommitted changes)",
+    "cache": "on",
+    "committable_only": false,
+    "duration_s": 1471
+  },
+  "results": [
+    {
+      "id": "CLN-01",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "greeting",
+          "text": "Hi there,",
+          "citations": []
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "framing",
+          "text": "This week in First Principles: how retrieval-augmented generation works.",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The original RAG paper combines a pretrained generator with a retriever.",
+          "citations": [
+            "ext-rag-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The generator is a language model that writes the answer.",
+          "citations": [
+            "ext-rag-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The retriever searches a dense index of Wikipedia.",
+          "citations": [
+            "ext-rag-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "A dense index is a store of text embeddings.",
+          "citations": [
+            "ext-rag-paper"
+          ]
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "cta",
+          "text": "Read the explainer.",
+          "citations": []
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "sign_off",
+          "text": "\u2014 Residual Room",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "CLN-02",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "framing",
+          "text": "Failure Modes this week: your LLM judge is less stable than you think.",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "When the answer order is swapped, Claude-v1 keeps its verdict only 23.8% of the time.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "When the answer order is swapped, GPT-4 keeps its verdict 65.0% of the time.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "cta",
+          "text": "Read the explainer.",
+          "citations": []
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "sign_off",
+          "text": "\u2014 Residual Room",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "CLN-03",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "framing",
+          "text": "Paper to Practice: Lost in the Middle.",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Accuracy is highest when the answer sits at the start or end of the context, and drops in the middle.",
+          "citations": [
+            "ext-litm-paper"
+          ]
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "cta",
+          "text": "Read the explainer.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "CLN-04",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "framing",
+          "text": "Paper to Practice: Judging LLM-as-a-Judge.",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The authors found GPT-4 agreed with expert labelers 85% of the time on non-tie votes.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "opinion",
+          "text": "We think that number gets over-quoted: it excludes ties, and the paper's own position-bias results show how much the setup matters.",
+          "citations": []
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "cta",
+          "text": "Read the source.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "CLN-05",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "block",
+      "rules": [
+        "P1"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "The explainer on retrieval failures originally said Lost in the Middle tested only GPT-3.5-Turbo.",
+          "evidence": null
+        },
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "Lost in the Middle tested several open and closed models.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The explainer on retrieval failures originally said Lost in the Middle tested only GPT-3.5-Turbo.",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Lost in the Middle tested several open and closed models.",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The correction was fixed on 10 November.",
+          "citations": [
+            "exp-003-v2",
+            "int-corrections"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CLN-06",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "framing",
+          "text": "Subject: Why your judge flips its verdict",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Swap the answer order and many LLM judges change their verdict.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CLN-07",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "greeting",
+          "text": "Welcome to Residual Room!",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "New issues arrive Thursdays at 9:00 AM IST.",
+          "citations": [
+            "int-schedule-v1"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Residual Room is free.",
+          "citations": [
+            "int-subscription"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Every email has an unsubscribe link.",
+          "citations": [
+            "int-subscription"
+          ]
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "sign_off",
+          "text": "\u2014 Residual Room",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "CLN-08",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "S4"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "An \"LLM judge\" is a language model used to grade other models' answers.",
+          "evidence": null
+        },
+        {
+          "rule": "S4",
+          "reason": "Uses undefined jargon 'evals' without definition for transitioning engineers.",
+          "segment_text": "New to evals?",
+          "evidence": null
+        },
+        {
+          "rule": "S4",
+          "reason": "Uses undefined technical term 'position bias' without definition for transitioning engineers.",
+          "segment_text": "Position bias is a known weakness of LLM judges.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "framing",
+          "text": "New to evals?",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "An \"LLM judge\" is a language model used to grade other models' answers.",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Position bias is a known weakness of LLM judges.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Some LLM judges favor whichever answer they see first.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "read_next",
+          "text": "Read next: our First Principles explainer on RAG.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "GRD-01",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "MT-Bench contains 80 multi-turn questions across 8 categories.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-02",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P2"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P2"
+      ],
+      "hits": [
+        {
+          "rule": "P2",
+          "reason": "number does not match the source: The source states MT-Bench consists of 80 multi-turn questions across 8 categories, not 100.",
+          "segment_text": "MT-Bench contains 100 multi-turn questions across 8 categories.",
+          "evidence": "ext-mtbench-paper#0008"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "MT-Bench contains 100 multi-turn questions across 8 categories.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-03",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P1"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "MT-Bench covers categories like writing, coding and math.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "MT-Bench covers categories like writing, coding and math.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "GRD-04",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "In the paper's expert study, GPT-4 agreed with human labelers 85% of the time on non-tie votes.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "In the paper's expert study, human labelers agreed with each other 81% of the time on non-tie votes.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-05",
+      "split": "test",
+      "hard": true,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P2"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2",
+        "S2"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: The passages report GPT-4 agreement with human experts at 85% (single-answer grading) or 87% (pairwise) under setup S2, not 95%; the 95% figure in Table 6 refers to agreement between GPT-4 and GPT-4 single-answer grading, not humans.",
+          "segment_text": "GPT-4 agreed with human experts 95% of the time.",
+          "evidence": "ext-mtbench-paper#0027"
+        },
+        {
+          "rule": "P2",
+          "reason": "number does not match the source: The passages report GPT-4 agreement with human experts at 85% (single-answer grading) or 87% (pairwise) under setup S2, not 95%; the 95% figure in Table 6 refers to agreement between GPT-4 and GPT-4 single-answer grading, not humans.",
+          "segment_text": "GPT-4 agreed with human experts 95% of the time.",
+          "evidence": "ext-mtbench-paper#0027"
+        },
+        {
+          "rule": "S2",
+          "reason": "The verb 'agreed' anthropomorphizes the model by attributing human-like intent or understanding to it.",
+          "segment_text": "GPT-4 agreed with human experts 95% of the time.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "GPT-4 agreed with human experts 95% of the time.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-06",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P1"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "S2"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: The authors explicitly state their study cannot determine whether models exhibit a self-enhancement bias, so they did not prove LLM judges prefer their own outputs.",
+          "segment_text": "The authors proved that LLM judges prefer their own outputs.",
+          "evidence": "ext-mtbench-paper#0018"
+        },
+        {
+          "rule": "S2",
+          "reason": "The word 'prefer' anthropomorphizes the LLM by attributing human-like desire to the model.",
+          "segment_text": "The authors proved that LLM judges prefer their own outputs.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The authors proved that LLM judges prefer their own outputs.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-07",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "GPT-4 showed about a 10% higher win rate for its own answers.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The authors say their data can't confirm a self-enhancement bias.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-08",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "When the answer order was swapped, Claude-v1 gave a consistent verdict only 23.8% of the time.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-09",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P2"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: The position bias table shows GPT-4 consistency when swapping answer order ranges from 51.2% to 66.2%, not 85%.",
+          "segment_text": "When the answer order was swapped, GPT-4 stayed consistent 85% of the time.",
+          "evidence": "ext-mtbench-paper#0044"
+        },
+        {
+          "rule": "P2",
+          "reason": "number does not match the source: The position bias table shows GPT-4 consistency when swapping answer order ranges from 51.2% to 66.2%, not 85%.",
+          "segment_text": "When the answer order was swapped, GPT-4 stayed consistent 85% of the time.",
+          "evidence": "ext-mtbench-paper#0044"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "When the answer order was swapped, GPT-4 stayed consistent 85% of the time.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-10",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The paper's conservative fix for position bias is to run the judge twice with the order swapped and only count a win if both runs agree.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-11",
+      "split": "test",
+      "hard": true,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P2"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: Table 3 shows GPT-4's failure rate under the repetitive-list attack is 8.7%, not 91.3% (which applies to Claude-v1 and GPT-3.5).",
+          "segment_text": "GPT-4 fell for the repetitive-list verbosity attack 91.3% of the time.",
+          "evidence": "ext-mtbench-paper#0016"
+        },
+        {
+          "rule": "P2",
+          "reason": "number does not match the source: Table 3 shows GPT-4's failure rate under the repetitive-list attack is 8.7%, not 91.3% (which applies to Claude-v1 and GPT-3.5).",
+          "segment_text": "GPT-4 fell for the repetitive-list verbosity attack 91.3% of the time.",
+          "evidence": "ext-mtbench-paper#0016"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "GPT-4 fell for the repetitive-list verbosity attack 91.3% of the time.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-12",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Few-shot examples raised GPT-4's consistency under order swaps from 65.0% to 77.5%.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-13",
+      "split": "test",
+      "hard": true,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P1"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: The passages discuss position bias in LLM-as-a-judge evaluations (preference for first/second answer in pairwise comparisons), not how models utilize information at different positions within a context window.",
+          "segment_text": "Models use information best when it sits at the start or end of the context.",
+          "evidence": "ext-mtbench-paper#0045"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Models use information best when it sits at the start or end of the context.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-14",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Models use information best when it sits at the start or end of the context.",
+          "citations": [
+            "ext-litm-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-15",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P1"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: The passages describe the U-shaped performance curve and middle-of-context degradation but do not state that explicitly long-context models solve this problem.",
+          "segment_text": "Lost in the Middle shows that explicitly long-context models solve the middle-of-context problem.",
+          "evidence": "ext-litm-paper#0004"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Lost in the Middle shows that explicitly long-context models solve the middle-of-context problem.",
+          "citations": [
+            "ext-litm-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-16",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Models tend to use information at the start and end of a long document best and lose track of the middle.",
+          "citations": [
+            "ext-litm-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-17",
+      "split": "test",
+      "hard": true,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P1"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "S2",
+        "S4"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: The passages report significantly degraded performance when relevant information is in the middle of the context, not that models ignore it entirely.",
+          "segment_text": "Models ignore the middle of your prompt entirely.",
+          "evidence": "ext-litm-paper#0005"
+        },
+        {
+          "rule": "S2",
+          "reason": "The verb \"ignore\" anthropomorphizes the model by attributing human-like intentional disregard to its token-processing behavior.",
+          "segment_text": "Models ignore the middle of your prompt entirely.",
+          "evidence": null
+        },
+        {
+          "rule": "S4",
+          "reason": "The term \"prompt\" is AI-specific jargon used without definition for engineers new to AI.",
+          "segment_text": "Models ignore the middle of your prompt entirely.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Models ignore the middle of your prompt entirely.",
+          "citations": [
+            "ext-litm-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-18",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Adding more retrieved documents stopped helping well before the retriever stopped finding relevant ones.",
+          "citations": [
+            "ext-litm-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-19",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The original RAG paper pairs a pretrained seq2seq generator with a DPR retriever over a dense Wikipedia index.",
+          "citations": [
+            "ext-rag-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-20",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P2"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: The source states RAG is within 4.3% of state-of-the-art for 3-way classification and within 2.7% for 2-way classification, not within 1%.",
+          "segment_text": "On FEVER, RAG came within 1% of state-of-the-art pipeline models.",
+          "evidence": "ext-rag-paper#0027"
+        },
+        {
+          "rule": "P2",
+          "reason": "number does not match the source: The source states RAG is within 4.3% of state-of-the-art for 3-way classification and within 2.7% for 2-way classification, not within 1%.",
+          "segment_text": "On FEVER, RAG came within 1% of state-of-the-art pipeline models.",
+          "evidence": "ext-rag-paper#0027"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "On FEVER, RAG came within 1% of state-of-the-art pipeline models.",
+          "citations": [
+            "ext-rag-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "POL-01",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P3"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P3"
+      ],
+      "hits": [
+        {
+          "rule": "P3",
+          "reason": "Guarantees job readiness as an AI engineer within 30 days, which is a career outcome promise.",
+          "segment_text": "Finish this series and you'll be job-ready as an AI engineer in 30 days.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "Finish this series and you'll be job-ready as an AI engineer in 30 days.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-02",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P3"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P3"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "Engineers who master RAG evaluation are landing much higher-paying roles.",
+          "evidence": null
+        },
+        {
+          "rule": "P3",
+          "reason": "Claims that mastering RAG evaluation leads to higher-paying roles, which is a career outcome promise.",
+          "segment_text": "Engineers who master RAG evaluation are landing much higher-paying roles.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Engineers who master RAG evaluation are landing much higher-paying roles.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-03",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "block",
+      "rules": [
+        "P1"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "This series won't make you job-ready on its own.",
+          "evidence": null
+        },
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "It's one piece of a longer path.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "This series won't make you job-ready on its own.",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "It's one piece of a longer path.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-04",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P4"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P4"
+      ],
+      "hits": [
+        {
+          "rule": "P4",
+          "reason": "States a prediction about future job displacement as a fact without attribution or qualification.",
+          "segment_text": "Agents will replace most junior developers by 2028.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "Agents will replace most junior developers by 2028.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-05",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "block",
+      "rules": [
+        "P1"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: The passages discuss limitations of long-context models in using information effectively and the continued importance of retrieval/reranking, not an argument that long-context models will make retrieval unnecessary.",
+          "segment_text": "Some researchers argue long-context models will make retrieval unnecessary.",
+          "evidence": "ext-litm-paper#0001"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Some researchers argue long-context models will make retrieval unnecessary.",
+          "citations": [
+            "ext-litm-paper"
+          ]
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "opinion",
+          "text": "We're not convinced: their own results show accuracy drops when the answer sits mid-context.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-06",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P6"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P6"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "Word is that one major lab is quietly training a retrieval-native model for release next month.",
+          "evidence": null
+        },
+        {
+          "rule": "P6",
+          "reason": "Sentence spreads an unverified rumor about an unreleased model from an unnamed major lab without an official source.",
+          "segment_text": "Word is that one major lab is quietly training a retrieval-native model for release next month.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Word is that one major lab is quietly training a retrieval-native model for release next month.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-07",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P6"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P6"
+      ],
+      "hits": [
+        {
+          "rule": "P6",
+          "reason": "Disparages named company LangChain.",
+          "segment_text": "LangChain is a bloated mess that only amateurs still use.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "LangChain is a bloated mess that only amateurs still use.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-08",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "warn",
+      "expected_rules": [
+        "S1"
+      ],
+      "verdict": "warn",
+      "rules": [
+        "S1",
+        "S4"
+      ],
+      "hits": [
+        {
+          "rule": "S1",
+          "reason": "hype word from the avoid-list: 'game-changer'",
+          "segment_text": "Reranking is a game-changer.",
+          "evidence": "game-changer"
+        },
+        {
+          "rule": "S1",
+          "reason": "hype word from the avoid-list: 'magic'",
+          "segment_text": "Honestly, it feels like magic.",
+          "evidence": "magic"
+        },
+        {
+          "rule": "S4",
+          "reason": "Reranking is a technical term used without definition for transitioning engineers.",
+          "segment_text": "Reranking is a game-changer.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "Reranking is a game-changer.",
+          "citations": []
+        },
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "Honestly, it feels like magic.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-09",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "warn",
+      "expected_rules": [
+        "S2"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "S2",
+        "S4"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "The model understands your documents.",
+          "evidence": null
+        },
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "The model wants to find the best answer for you.",
+          "evidence": null
+        },
+        {
+          "rule": "S2",
+          "reason": "The sentence anthropomorphizes the model by saying it 'understands'.",
+          "segment_text": "The model understands your documents.",
+          "evidence": null
+        },
+        {
+          "rule": "S4",
+          "reason": "The term 'model' is used without definition for transitioning engineers.",
+          "segment_text": "The model understands your documents.",
+          "evidence": null
+        },
+        {
+          "rule": "S2",
+          "reason": "The sentence anthropomorphizes the model by saying it 'wants'.",
+          "segment_text": "The model wants to find the best answer for you.",
+          "evidence": null
+        },
+        {
+          "rule": "S4",
+          "reason": "The term 'model' is used without definition for transitioning engineers.",
+          "segment_text": "The model wants to find the best answer for you.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The model understands your documents.",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The model wants to find the best answer for you.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-10",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "warn",
+      "expected_rules": [
+        "S3"
+      ],
+      "verdict": "warn",
+      "rules": [
+        "S3"
+      ],
+      "hits": [
+        {
+          "rule": "S3",
+          "reason": "3 calls to action; the brand guide allows one per message",
+          "segment_text": "(document)",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "cta",
+          "text": "Read the full explainer here.",
+          "citations": []
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "cta",
+          "text": "And while you're at it, subscribe and reply with your toughest eval question.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-11",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "warn",
+      "expected_rules": [
+        "S4"
+      ],
+      "verdict": "warn",
+      "rules": [
+        "S4"
+      ],
+      "hits": [
+        {
+          "rule": "S4",
+          "reason": "Uses undefined jargon ('cross-encoder reranker', 'ColBERT-style late interaction', 'recall') without definitions for transitioning engineers.",
+          "segment_text": "Add a cross-encoder reranker on top of ColBERT-style late interaction to fix recall.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "Add a cross-encoder reranker on top of ColBERT-style late interaction to fix recall.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "POL-12",
+      "split": "test",
+      "hard": true,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "Add a cross-encoder reranker on top of ColBERT-style late interaction to fix recall.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "STL-01",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P5"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2",
+        "P5"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "New issues land every Tuesday.",
+          "evidence": null
+        },
+        {
+          "rule": "P5",
+          "reason": "repeats a superseded source: The sentence matches the superseded Tuesday schedule, but the current schedule states issues go out on Thursdays.",
+          "segment_text": "New issues land every Tuesday.",
+          "evidence": "int-schedule-v0#0000"
+        },
+        {
+          "rule": "P2",
+          "reason": "date or figure conflicts with the current source: The sentence matches the superseded Tuesday schedule, but the current schedule states issues go out on Thursdays.",
+          "segment_text": "New issues land every Tuesday.",
+          "evidence": "int-schedule-v0#0000"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "New issues land every Tuesday.",
+          "citations": []
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "sign_off",
+          "text": "See you next week!",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "STL-02",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P5"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2",
+        "P5"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "Residual Room goes out Tuesday mornings at 9:00 AM IST.",
+          "evidence": null
+        },
+        {
+          "rule": "P5",
+          "reason": "repeats a superseded source: The sentence matches the superseded Tuesday 9:00 AM IST schedule, but the current schedule (v1) states Thursdays at 9:00 AM IST.",
+          "segment_text": "Residual Room goes out Tuesday mornings at 9:00 AM IST.",
+          "evidence": "int-schedule-v0#0000"
+        },
+        {
+          "rule": "P2",
+          "reason": "date or figure conflicts with the current source: The sentence matches the superseded Tuesday 9:00 AM IST schedule, but the current schedule (v1) states Thursdays at 9:00 AM IST.",
+          "segment_text": "Residual Room goes out Tuesday mornings at 9:00 AM IST.",
+          "evidence": "int-schedule-v0#0000"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Residual Room goes out Tuesday mornings at 9:00 AM IST.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "STL-03",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P2",
+        "P5"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "Issue 1 arrives on Tuesday, 3 November.",
+          "evidence": null
+        },
+        {
+          "rule": "P2",
+          "reason": "contradicts a current source: The current schedule states Issue 1 goes out Thursday, 5 November 2026, while the sentence claims Tuesday, 3 November.",
+          "segment_text": "Issue 1 arrives on Tuesday, 3 November.",
+          "evidence": "int-schedule-v1#0000"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Issue 1 arrives on Tuesday, 3 November.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "STL-04",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P2"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "factual claim without a citation",
+          "segment_text": "New issues every Thursday at 10:00 AM IST.",
+          "evidence": null
+        },
+        {
+          "rule": "P2",
+          "reason": "contradicts a current source: The current publishing schedule states the newsletter goes out weekly on Thursdays at 9:00 AM IST, not 10:00 AM IST.",
+          "segment_text": "New issues every Thursday at 10:00 AM IST.",
+          "evidence": "int-schedule-v1#0000"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "New issues every Thursday at 10:00 AM IST.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "STL-05",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "New issues are published every Thursday at 9:00 AM IST.",
+          "citations": [
+            "int-schedule-v1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "STL-06",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P1"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "contradicts a current source: The series definitions assign the explainer 'Why retrieval fails (chunking, lost context, near-duplicates)' to the Failure Modes series, not to Paper to Practice.",
+          "segment_text": "This week in Paper to Practice: why retrieval fails because of chunking and near-duplicate documents.",
+          "evidence": "int-series#0000"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "framing",
+          "text": "This week in Paper to Practice: why retrieval fails because of chunking and near-duplicate documents.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "STL-07",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P5"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P5"
+      ],
+      "hits": [
+        {
+          "rule": "P5",
+          "reason": "cites superseded source 'exp-003-v1'",
+          "segment_text": "Lost in the Middle tested only GPT-3.5-Turbo.",
+          "evidence": "exp-003-v1"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Lost in the Middle tested only GPT-3.5-Turbo.",
+          "citations": [
+            "exp-003-v1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "STL-08",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Lost in the Middle tested several open and closed models.",
+          "citations": [
+            "exp-003-v2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "STL-09",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P1"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "contradicts a current source: The subscription rules explicitly state there is no paid tier and any content mentioning pricing or premium access is a violation.",
+          "segment_text": "Upgrade to Residual Room Pro for early access to deep dives.",
+          "evidence": "int-subscription#0000"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "Upgrade to Residual Room Pro for early access to deep dives.",
+          "citations": []
+        }
+      ]
+    },
+    {
+      "id": "STL-10",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P5"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P5"
+      ],
+      "hits": [
+        {
+          "rule": "P5",
+          "reason": "first issue after the exp-003 correction (2026-11-10) must carry a correction notice",
+          "segment_text": "(document)",
+          "evidence": "exp-003-v2"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "exempt",
+          "exempt_type": "framing",
+          "text": "Failure Modes this week: your LLM judge is less stable than you think.",
+          "citations": []
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Swap the answer order and Claude-v1 kept its verdict only 23.8% of the time.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "GPT-4 managed 65.0% when the answer order was swapped.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "The paper's conservative fix is to run the judge twice with the order swapped and only count a win if both runs agree.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "opinion",
+          "text": "We think every team running an LLM judge should report this swap test next to its headline accuracy.",
+          "citations": []
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "cta",
+          "text": "Read the explainer.",
+          "citations": []
+        },
+        {
+          "kind": "exempt",
+          "exempt_type": "sign_off",
+          "text": "\u2014 Residual Room",
+          "citations": []
+        }
+      ]
+    }
+  ]
+}
