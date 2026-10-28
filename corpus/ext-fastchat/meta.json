@@ -1,0 +1,14 @@
+{
+  "source_id": "ext-fastchat",
+  "fetch_url": "https://github.com/lm-sys/FastChat",
+  "fetched_at": "2026-10-28T06:30:42+00:00",
+  "sha256": "d9d87e99dcd0f2c10ec329da57843cf004c9c2538dc7ba795c2f4669bb500c03",
+  "license": "Apache-2.0",
+  "committable": true,
+  "repo": "lm-sys/FastChat",
+  "commit": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+  "include": [
+    "fastchat/llm_judge/README.md",
+    "fastchat/llm_judge/data/judge_prompts.jsonl"
+  ]
+}

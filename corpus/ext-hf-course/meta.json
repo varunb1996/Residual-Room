@@ -1,0 +1,14 @@
+{
+  "source_id": "ext-hf-course",
+  "fetch_url": "https://github.com/huggingface/course",
+  "fetched_at": "2026-10-28T06:00:10+00:00",
+  "sha256": "9edbbbf1e131f0d2c4af6089368c45be3524d2d965d83244111a02690bd30f5c",
+  "license": "Apache-2.0",
+  "committable": true,
+  "repo": "huggingface/course",
+  "commit": "8b893f0ede6c781045692a7f892f25a0c92b4805",
+  "include": [
+    "chapters/en/chapter5/6.mdx",
+    "chapters/en/chapter1/4.mdx"
+  ]
+}

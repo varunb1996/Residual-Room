@@ -1,0 +1,16 @@
+{
+  "source_id": "ext-ragas-repo",
+  "fetch_url": "https://github.com/vibrantlabsai/ragas",
+  "fetched_at": "2026-10-28T06:30:40+00:00",
+  "sha256": "2fcbe32bbc8a9d401592714ddf5c4c8a80fbe162d55eefa180482bf9008dccde",
+  "license": "Apache-2.0",
+  "committable": true,
+  "repo": "vibrantlabsai/ragas",
+  "commit": "298b68274234c060deacab3cf5fb52aa3a20e885",
+  "include": [
+    "docs/concepts/metrics/available_metrics/faithfulness.md",
+    "docs/concepts/metrics/available_metrics/context_precision.md",
+    "docs/concepts/metrics/available_metrics/context_recall.md",
+    "docs/concepts/metrics/overview/index.md"
+  ]
+}

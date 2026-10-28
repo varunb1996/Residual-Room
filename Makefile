@@ -1,14 +1,18 @@
-.PHONY: setup fetch ingest eval migrate run test
+.PHONY: setup fetch ingest query eval migrate run test
 
 setup:
 	uv sync
 
 # Stubs until their prompts land.
 fetch:
-	@echo make fetch: not implemented yet - Prompt 2
+	uv run python -m residual_room.corpus.fetch
 
 ingest:
-	@echo make ingest: not implemented yet - Prompt 2
+	uv run python -m residual_room.corpus.ingest
+
+# make query Q="position bias in LLM judges"
+query:
+	uv run python scripts/query.py "$(Q)"
 
 eval:
 	@echo make eval: not implemented yet - Prompt 5. Needs make fetch first.

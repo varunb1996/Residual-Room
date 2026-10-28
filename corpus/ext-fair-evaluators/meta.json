@@ -1,0 +1,8 @@
+{
+  "source_id": "ext-fair-evaluators",
+  "fetch_url": "https://aclanthology.org/2024.acl-long.511.pdf",
+  "fetched_at": "2026-10-28T05:58:24+00:00",
+  "sha256": "f2065e79e43d059067dcbe5af2083c07a86f05e9d34c1a5c337d8fe107a782e8",
+  "license": "CC BY 4.0 (ACL Anthology, ACL 2024)",
+  "committable": true
+}

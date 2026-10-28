@@ -1,0 +1,8 @@
+{
+  "source_id": "ext-dpr-paper",
+  "fetch_url": "https://aclanthology.org/2020.emnlp-main.550.pdf",
+  "fetched_at": "2026-10-28T05:58:10+00:00",
+  "sha256": "2c9b6cc6c4cba71a05f07da130fcabe5017e630fa7161818a9f8e9b041e5f1f6",
+  "license": "CC BY 4.0 (ACL Anthology, EMNLP 2020)",
+  "committable": true
+}

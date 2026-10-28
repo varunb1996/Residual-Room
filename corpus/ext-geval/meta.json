@@ -1,0 +1,8 @@
+{
+  "source_id": "ext-geval",
+  "fetch_url": "https://aclanthology.org/2023.emnlp-main.153.pdf",
+  "fetched_at": "2026-10-28T05:58:28+00:00",
+  "sha256": "ea74c8e4a9e5fb5812825958747ad89de0bb056db189e5c166e3250ad7b5c261",
+  "license": "CC BY 4.0 (ACL Anthology, EMNLP 2023)",
+  "committable": true
+}

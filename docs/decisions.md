@@ -61,3 +61,35 @@
 - The real-database test fails rather than skips when `DATABASE_URL` is missing, so `make test` can't pass silently.
 - `.gitattributes` forces LF: make recipes break on CRLF, and deploys run on Linux.
 - Dev-machine note: the JioFiber router's DNS refuses every name under `aws.neon.tech` (Neon's database endpoints), while `neon.tech` resolves. Fixed by pointing the PC's Wi-Fi DNS at 1.1.1.1 / 8.8.8.8. Not a code issue.
+
+## 2026-10-28 — Fetch and ingest (Prompt 2)
+
+### Free models only
+- Owner constraint: no paid model APIs anywhere (embeddings, generator, judge).
+- Embeddings: `BAAI/bge-small-en-v1.5` (384 dims), run locally via `fastembed` (ONNX, no PyTorch). Free, no key, no rate limit, works offline, deterministic (same text → same vector, so eval runs are reproducible against a corpus version). Queries get bge's retrieval instruction prefix; passages don't. Deploy-time memory on Render's free tier to be checked at Prompt 10.
+
+### Manifest (data changes, owner-approved)
+- `path` on internal sources; `fetch_url` and `include` on external ones. `url` stays the canonical reference.
+- Six Anthology/TACL PDFs; arXiv HTML pinned to a version for MT-Bench (v4), RAG (v4), RAG survey (v5). Every fetch_url checked to resolve with the right title.
+- Repos moved: sentence-transformers → `huggingface/`, ragas → `vibrantlabsai/`; LangChain splitter docs → `langchain-ai/docs`. Licenses rechecked: unchanged (Apache-2.0, Apache-2.0, MIT).
+- Repo fetches pin the commit SHA of HEAD at fetch time (recorded in `meta.json`).
+- `committable` = `commit_allowed AND license_verified`; an unverified license can never be committed.
+
+### Extraction
+- Everything is normalized to markdown with `#` headings so one chunker handles all sources.
+- arXiv HTML: tables become markdown tables with their caption, and rowspan/colspan cells are filled in, so every row keeps its labels (MT-Bench Table 2's "rename" rows keep their judge name). Bibliographies are dropped.
+- PDFs: pypdf (BSD; PyMuPDF avoided because it's AGPL). Headings found by pattern ("3.4 Title"); text after "References" dropped.
+- Notebooks keep markdown and code cells, drop outputs. Repo-file headings are demoted one level to nest under their file path.
+
+### Chunking
+- Split at headings, then pack paragraphs to ~400 tokens (hard cap ~512, at ~4 chars/token). Docs under the cap stay whole (one fact, one chunk for the small internal docs).
+- Tables are one chunk each (caption + rows); oversized tables split by rows with caption and header repeated. Code fences never split mid-block.
+- No overlap: a sentence lives in exactly one chunk, so "which chunk supports this claim" has one answer.
+- Chunk IDs: `<source_id>#<seq>` (e.g. `ext-mtbench-paper#0012`), unique within a corpus version. Each chunk stores its heading path; embeddings are computed on heading path + text.
+
+### Storage and retrieval
+- Tables `corpus_versions`, `sources` (manifest snapshot per version), `chunks` (status, license and commit flag denormalized onto each row). Deleting a version cascades.
+- A corpus version is written in one transaction and is immutable: re-ingesting needs `--replace`.
+- No vector index yet: exact cosine search over a few thousand rows is fast enough.
+- `search(include_superseded=False)` by default (generation); the checker will pass `True`.
+- `make fetch` uses one GitHub API call per repo (anonymous limit is 60/hour) and honours an optional `GITHUB_TOKEN`.

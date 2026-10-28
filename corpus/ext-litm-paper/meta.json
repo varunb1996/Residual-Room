@@ -1,0 +1,8 @@
+{
+  "source_id": "ext-litm-paper",
+  "fetch_url": "https://aclanthology.org/2024.tacl-1.9.pdf",
+  "fetched_at": "2026-10-28T05:58:48+00:00",
+  "sha256": "48c50549f65f9503bc1a4ce5eb66d1a332a1df6bd17750ac4bc4c5bb1c421881",
+  "license": "CC BY 4.0 (TACL)",
+  "committable": true
+}

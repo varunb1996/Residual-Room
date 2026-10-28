@@ -1,0 +1,13 @@
+{
+  "source_id": "ext-litm-code",
+  "fetch_url": "https://github.com/nelson-liu/lost-in-the-middle",
+  "fetched_at": "2026-10-28T06:30:41+00:00",
+  "sha256": "2b63448a1cf9d4d7db0da41174667f3e3229f2d3d7df60d836acec0d4d60a460",
+  "license": "MIT",
+  "committable": true,
+  "repo": "nelson-liu/lost-in-the-middle",
+  "commit": "29b8a6d042ce29abccee3db1a73171a107d7e6af",
+  "include": [
+    "README.md"
+  ]
+}

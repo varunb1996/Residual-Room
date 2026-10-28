@@ -1,0 +1,8 @@
+{
+  "source_id": "ext-ragas-paper",
+  "fetch_url": "https://aclanthology.org/2024.eacl-demo.16.pdf",
+  "fetched_at": "2026-10-28T05:58:31+00:00",
+  "sha256": "44c64ffab52650038c76ea8930abddd142144ec169604e6851e0fc63c045db0a",
+  "license": "CC BY 4.0 (ACL Anthology, EACL 2024 demos)",
+  "committable": true
+}

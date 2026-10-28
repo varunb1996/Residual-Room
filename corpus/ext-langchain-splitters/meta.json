@@ -1,0 +1,15 @@
+{
+  "source_id": "ext-langchain-splitters",
+  "fetch_url": "https://github.com/langchain-ai/docs",
+  "fetched_at": "2026-10-28T06:00:14+00:00",
+  "sha256": "47928d12c25b09cf8ee13f1c1c2534f0a4b97267bd61ab4c98d69b19b7489c29",
+  "license": "MIT",
+  "committable": true,
+  "repo": "langchain-ai/docs",
+  "commit": "a7be5485eae4560af9190334c371b7733952d5de",
+  "include": [
+    "src/oss/integrations/splitters/index.mdx",
+    "src/oss/integrations/splitters/recursive_text_splitter.mdx",
+    "src/oss/integrations/splitters/split_by_token.mdx"
+  ]
+}

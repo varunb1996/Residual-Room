@@ -1,0 +1,15 @@
+{
+  "source_id": "ext-openai-cookbook",
+  "fetch_url": "https://github.com/openai/openai-cookbook",
+  "fetched_at": "2026-10-28T06:00:12+00:00",
+  "sha256": "fa549185df8f6c38825203e37b3c7a1328600dc204c550093fc399a47479a13b",
+  "license": "MIT",
+  "committable": true,
+  "repo": "openai/openai-cookbook",
+  "commit": "a8132ca2f7a5de3a6cf15d9e79d172787b42b697",
+  "include": [
+    "examples/Question_answering_using_embeddings.ipynb",
+    "examples/Semantic_text_search_using_embeddings.ipynb",
+    "examples/Search_reranking_with_cross-encoders.ipynb"
+  ]
+}

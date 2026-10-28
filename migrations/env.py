@@ -3,6 +3,7 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import create_engine, pool
 
+from residual_room.db.models import Base
 from residual_room.settings import get_settings
 
 config = context.config
@@ -14,8 +15,8 @@ if config.config_file_name is not None:
 # config.set_main_option, because configparser chokes on %-encoded passwords.
 url = get_settings().database_url
 
-# No ORM metadata yet; migrations are hand-written until there are models.
-target_metadata = None
+# Migrations are still hand-written; the metadata lets `alembic check` spot drift.
+target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:

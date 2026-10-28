@@ -4,6 +4,9 @@
 # Non-committable source text (commit_allowed: false), filled by `make fetch`
 corpus_local/
 
+# Downloaded embedding model (fastembed)
+.cache/
+
 # Python
 .venv/
 __pycache__/

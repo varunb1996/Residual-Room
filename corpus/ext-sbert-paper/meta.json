@@ -1,0 +1,8 @@
+{
+  "source_id": "ext-sbert-paper",
+  "fetch_url": "https://aclanthology.org/D19-1410.pdf",
+  "fetched_at": "2026-10-28T05:58:00+00:00",
+  "sha256": "803e9d2dd50633058c306658a2f420db729c99614b9d6625f0b00fb9a5349896",
+  "license": "CC BY 4.0 (ACL Anthology, EMNLP 2019)",
+  "committable": true
+}

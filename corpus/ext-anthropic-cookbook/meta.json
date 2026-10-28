@@ -1,0 +1,14 @@
+{
+  "source_id": "ext-anthropic-cookbook",
+  "fetch_url": "https://github.com/anthropics/claude-cookbooks",
+  "fetched_at": "2026-10-28T06:00:13+00:00",
+  "sha256": "52926336c7d76e2d25c795cd378bfcb30534a911405e7dcd906f33b3c41a2181",
+  "license": "MIT",
+  "committable": true,
+  "repo": "anthropics/claude-cookbooks",
+  "commit": "bfe50e59dbb4f5546a0af9ca36ebb77e637c9ce1",
+  "include": [
+    "capabilities/retrieval_augmented_generation/guide.ipynb",
+    "capabilities/contextual-embeddings/guide.ipynb"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "source_id": "ext-llamaindex",
+  "fetch_url": "https://github.com/run-llama/llama_index",
+  "fetched_at": "2026-10-28T06:00:11+00:00",
+  "sha256": "d34b1db860e1ce9fc27a2218236a9ab49d8f56ee4a7bc7025ee169d65b53735e",
+  "license": "MIT",
+  "committable": true,
+  "repo": "run-llama/llama_index",
+  "commit": "619d74664e8404612038bc15a1a40c686037277c",
+  "include": [
+    "docs/src/content/docs/framework/understanding/rag/index.mdx",
+    "docs/src/content/docs/framework/getting_started/concepts.mdx",
+    "docs/src/content/docs/framework/optimizing/production_rag.md",
+    "docs/src/content/docs/framework/optimizing/basic_strategies/basic_strategies.md"
+  ]
+}
