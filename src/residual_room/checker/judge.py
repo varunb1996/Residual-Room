@@ -29,7 +29,7 @@ Policy:
 
 Decide:
 - "supported": true only if the passages state or directly imply everything the claim says (judge numbers separately, below). Overstatements are not supported (e.g. "proved" when the source says it cannot confirm; "entirely" when the source reports a drop). A claim that may be true but that these passages do not contain is not supported.
-- "numbers": "none" if the claim has no figures or dates; "match" only if every figure matches the passages in value AND in what it describes (same model, same comparison, same setting); otherwise "mismatch". If the only problem is a number, set "supported" true and "numbers" "mismatch".
+- "numbers": "none" if the claim has no figures or dates; "match" only if every figure matches the passages in value AND in what it describes (same model, same comparison, same setting); otherwise "mismatch". Leaving out detail the passages give (a year, a unit clear from context, extra decimal places) is not a mismatch, as long as what the claim does state agrees with them. If the only problem is a number, set "supported" true and "numbers" "mismatch".
 - "evidence_chunk": the id of the passage you relied on most (the id in square brackets).
 
 Reply with only JSON: {{"supported": true|false, "numbers": "none"|"match"|"mismatch", "evidence_chunk": "<id>", "reason": "<one sentence>"}}"""
@@ -48,6 +48,7 @@ POLICY_SYSTEM = """You check sentences from an AI-education newsletter against t
 
 The reader segment is "{segment}". {segment_note}
 Sentences the publication clearly marks as its own opinion ("We think ...", "We're not convinced ...") may argue and disagree; that is allowed.
+Explicitly framed analogies ("like a reader skimming a long doc", "think of it as ...") are not anthropomorphizing (S2): the brand guide asks for analogies to build intuition.
 Report only clear violations, one entry per sentence and rule.
 
 Reply with only JSON: {{"hits": [{{"index": <int>, "rule": "<rule id>", "reason": "<one sentence>"}}]}}  (an empty list if none)"""

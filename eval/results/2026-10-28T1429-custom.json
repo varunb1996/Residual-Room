@@ -1,0 +1,242 @@
+{
+  "meta": {
+    "started_at": "2026-10-28T14:29:07",
+    "split": "custom",
+    "cases": 6,
+    "judge_model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "generator_model": "openai/gpt-oss-20b",
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "corpus_version": "corpus-v1",
+    "git_commit": "cbfe930 (uncommitted changes)",
+    "cache": "on",
+    "committable_only": false,
+    "duration_s": 6
+  },
+  "results": [
+    {
+      "id": "CLN-05",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "pass",
+      "rules": [],
+      "hits": [],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Our explainer on retrieval failures originally said Lost in the Middle tested only GPT-3.5-Turbo.",
+          "citations": [
+            "exp-003-v2",
+            "int-corrections"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Lost in the Middle tested several open and closed models.",
+          "citations": [
+            "exp-003-v2",
+            "int-corrections"
+          ]
+        },
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "We fixed it on 10 November.",
+          "citations": [
+            "exp-003-v2",
+            "int-corrections"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-16",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "pass",
+      "expected_rules": [],
+      "verdict": "warn",
+      "rules": [
+        "S4"
+      ],
+      "hits": [
+        {
+          "rule": "S4",
+          "reason": "The term 'models' is technical jargon used without definition for transitioning engineers.",
+          "segment_text": "Models tend to use information at the start and end of a long context best and lose track of the middle.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "Models tend to use information at the start and end of a long context best and lose track of the middle.",
+          "citations": [
+            "ext-litm-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-02",
+      "split": "dev",
+      "hard": false,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P2"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: The source states MT-Bench consists of 80 multi-turn questions (10 per category across 8 categories), not 100.",
+          "segment_text": "MT-Bench contains 100 multi-turn questions across 8 categories.",
+          "evidence": "ext-mtbench-paper#0008"
+        },
+        {
+          "rule": "P2",
+          "reason": "number does not match the source: The source states MT-Bench consists of 80 multi-turn questions (10 per category across 8 categories), not 100.",
+          "segment_text": "MT-Bench contains 100 multi-turn questions across 8 categories.",
+          "evidence": "ext-mtbench-paper#0008"
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "MT-Bench contains 100 multi-turn questions across 8 categories.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-11",
+      "split": "test",
+      "hard": true,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P2"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2",
+        "S2"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: The table shows GPT-4's failure rate under the repetitive-list attack is 8.7%, not 91.3%; the 91.3% figure applies to Claude-v1 and GPT-3.5.",
+          "segment_text": "GPT-4 fell for the repetitive-list verbosity attack 91.3% of the time.",
+          "evidence": "ext-mtbench-paper#0016"
+        },
+        {
+          "rule": "P2",
+          "reason": "number does not match the source: The table shows GPT-4's failure rate under the repetitive-list attack is 8.7%, not 91.3%; the 91.3% figure applies to Claude-v1 and GPT-3.5.",
+          "segment_text": "GPT-4 fell for the repetitive-list verbosity attack 91.3% of the time.",
+          "evidence": "ext-mtbench-paper#0016"
+        },
+        {
+          "rule": "S2",
+          "reason": "The phrase \"fell for\" anthropomorphizes the model by attributing human-like gullibility or intent to it.",
+          "segment_text": "GPT-4 fell for the repetitive-list verbosity attack 91.3% of the time.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "GPT-4 fell for the repetitive-list verbosity attack 91.3% of the time.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRD-05",
+      "split": "test",
+      "hard": true,
+      "expected_verdict": "block",
+      "expected_rules": [
+        "P2"
+      ],
+      "verdict": "block",
+      "rules": [
+        "P1",
+        "P2",
+        "S2"
+      ],
+      "hits": [
+        {
+          "rule": "P1",
+          "reason": "cited source does not support the claim: The evidence shows GPT-4's agreement with human experts is 85-87% (Table 6: 85% for G4-S vs H, 87% for G4 vs H under S2), not 95%; the 95% figures in the table refer to agreement between GPT-4 and other LLM judges (G4-S, Claude), not humans.",
+          "segment_text": "GPT-4 agreed with human experts 95% of the time.",
+          "evidence": "ext-mtbench-paper#0027"
+        },
+        {
+          "rule": "P2",
+          "reason": "number does not match the source: The evidence shows GPT-4's agreement with human experts is 85-87% (Table 6: 85% for G4-S vs H, 87% for G4 vs H under S2), not 95%; the 95% figures in the table refer to agreement between GPT-4 and other LLM judges (G4-S, Claude), not humans.",
+          "segment_text": "GPT-4 agreed with human experts 95% of the time.",
+          "evidence": "ext-mtbench-paper#0027"
+        },
+        {
+          "rule": "S2",
+          "reason": "The sentence anthropomorphizes the model by saying it 'agreed,' attributing human-like cognitive intent to a statistical process.",
+          "segment_text": "GPT-4 agreed with human experts 95% of the time.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "claim",
+          "exempt_type": null,
+          "text": "GPT-4 agreed with human experts 95% of the time.",
+          "citations": [
+            "ext-mtbench-paper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "POL-09",
+      "split": "test",
+      "hard": false,
+      "expected_verdict": "warn",
+      "expected_rules": [
+        "S2"
+      ],
+      "verdict": "warn",
+      "rules": [
+        "S2"
+      ],
+      "hits": [
+        {
+          "rule": "S2",
+          "reason": "The sentence anthropomorphizes the model by stating it 'understands' documents and 'wants' to find answers, attributing human cognition and intent to the system.",
+          "segment_text": "The model understands your documents and wants to find the best answer for you.",
+          "evidence": null
+        }
+      ],
+      "segments": [
+        {
+          "kind": "statement",
+          "exempt_type": null,
+          "text": "The model understands your documents and wants to find the best answer for you.",
+          "citations": []
+        }
+      ]
+    }
+  ]
+}

@@ -57,6 +57,8 @@ def git_commit() -> str:
 
 
 def main() -> int:
+    # Windows consoles default to cp1252, which can't print the ⚠ small-sample flag.
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--split", choices=["dev", "test", "all"], default="all")
     parser.add_argument("--cases", nargs="*", help="only these case ids")

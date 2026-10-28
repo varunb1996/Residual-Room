@@ -147,5 +147,12 @@
 - Extraction: "statement" now explicitly covers disclaimers about reader outcomes and descriptions of a model's mind, with a general tie-breaker ("could a source confirm or refute this?").
 - Bug found by the rerun: the extractor sometimes sends `"claims": null`; the schema now accepts it (it had turned CLN-02 into a blocking JUDGE error).
 - Second full run (`eval/results/2026-10-28T1351-all.md`, 1,695 s): lenient 44/50, strict 32/50, pass-case false positives 5/23, hard 5/5, one judge error (CLN-02, since fixed; rerun alone passes → corrected lenient 45/50). POL-03 and POL-09 fixed; GRD-16 newly flagged S2 on an explicit analogy; CLN-05 swapped its P1 for a P2 on an omitted year.
-- Proposed next (dev-motivated, not yet applied): numbers that omit detail (e.g. a year) aren't a P2 mismatch (CLN-05); explicitly framed analogies aren't S2 (GRD-16, and the brand guide encourages analogies).
 - Variance: with 50 cases, a ±1–2 case swing between runs is noise. Compare runs on the disagreement lists, not the headline number alone.
+
+### Owner review of the disagreement table (closes Prompt 5)
+- **Labels kept as written.** POL-05 and CLN-08 stay `pass` although the review suggested P1 and S4: labels only change the eval score, not the app's behaviour. Both remain known disagreements in future reports.
+- Two dev-motivated prompt fixes applied: leaving out detail the source gives (a year, a unit clear from context) is not a P2 mismatch; explicitly framed analogies are not S2.
+- Targeted check (`eval/results/2026-10-28T1429-custom.md`, 6 cases, ~2 min): CLN-05 now passes; GRD-16's S2 is gone but the judge now raises S4 on "models"; regression checks GRD-02, GRD-11, GRD-05 (P2 still caught) and POL-09 (S2 still caught) all pass.
+- Open: S4 over-fires on everyday AI words ("model", "prompt"). Not fixed yet.
+- **Eval cost, owner feedback:** full 50-case runs take ~25–30 min and use the owner's time. From now on: small fixes are checked with targeted reruns (the affected cases plus a few regression cases); full runs only at milestones and when asked. Parallelizing cases (the judge uses ~5 of ~40 allowed requests/minute) would cut a full run to ~8–10 min.
+- Fixed: the runner crashed on Windows printing the ⚠ small-sample flag (cp1252 console); stdout is now UTF-8.
