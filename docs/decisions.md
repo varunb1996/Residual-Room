@@ -156,3 +156,17 @@
 - Open: S4 over-fires on everyday AI words ("model", "prompt"). Not fixed yet.
 - **Eval cost, owner feedback:** full 50-case runs take ~25–30 min and use the owner's time. From now on: small fixes are checked with targeted reruns (the affected cases plus a few regression cases); full runs only at milestones and when asked. Parallelizing cases (the judge uses ~5 of ~40 allowed requests/minute) would cut a full run to ~8–10 min.
 - Fixed: the runner crashed on Windows printing the ⚠ small-sample flag (cp1252 console); stdout is now UTF-8.
+
+## 2026-10-28 — Approval state machine and review screen (Prompt 6)
+- Pieces are created from pasted text until generation exists (Prompt 3); generation will call the same create path. Everything after creation is the real flow.
+- State machine (`workflow/states.py`, pure code): draft → checks → in_review → approved → scheduled → sent; in_review → rejected; checks → draft on failure; edit from draft / in_review / rejected / approved → draft as a new version. One table lists every allowed move; a test walks all 7×8 state-action pairs.
+- A hard-blocked piece reaches in_review with its blocking hits shown; approval is gated separately. **Overrides are per hit**: the reviewer overrides each blocking hit with a written reason (blank refused, warnings can't be overridden). This records *which rule* the reviewer thinks the checker got wrong, for later review as possible checker errors.
+- Overrides and approvals belong to one version; an edit is a new version and must be checked again (tested).
+- A refused approval is itself written to the audit log (committed even though the request fails with 409).
+- Tables (migration 0003): pieces, piece_versions, check_runs (full report as JSONB), overrides (unique per hit; DB check that the reason isn't blank), audit_log. No auth: actions are recorded as "owner"; the checker's own events as "system".
+- Checks run in a FastAPI background task; the screen polls while the state is `checks`. A crashed checker returns the piece to draft with the error recorded, never leaves it stuck.
+- The checker now records which chunk supports each passing cited claim, so passing claims link to a source on screen too.
+- Review screen: React + Vite, plain CSS, light/dark. Typed client generated from FastAPI's OpenAPI schema (`make client` → `web/src/schema.d.ts`, `openapi-fetch`); `tsc` fails if the API and screen drift. FastAPI serves `web/dist` at `/`, API at `/api`.
+- TypeScript pinned to 5.x: openapi-typescript needs the TypeScript JS API, which TypeScript 7 (native compiler) doesn't ship. `@types/react`/`@types/react-dom` added as dev dependencies.
+- Verified in the browser with the real judge: STL-07 text → block (P5, superseded `exp-003-v1`), claim links to the SUPERSEDED source passage, approve refused, override with reason logged, approve succeeds; CLN-07 text → pass, claims link to `int-schedule-v1#0000` (CURRENT), approved. Audit trail shows every step.
+- Found during the walk-through: manifest titles containing a comma inside an unquoted YAML flow mapping are truncated (`int-schedule-v1` parses as "Publishing Schedule v1 (Thursdays 9:00 IST" plus a stray key). Not fixed: the manifest is owner data; needs quoting, then re-ingest.

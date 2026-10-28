@@ -36,6 +36,15 @@ def test_cited_number_mismatch_is_p2_with_evidence_and_reason():
     assert "Table 3" in judge.calls[0][1]  # the evidence text reached the judge
 
 
+def test_supported_claim_records_its_supporting_chunk():
+    judge = FakeJudge(route(cited={"supported": True, "numbers": "match",
+                                   "evidence_chunk": "ext-mtbench-paper#0016", "reason": "ok"}))
+    seg = Segment("GPT-4 fell for the attack 8.7% of the time.", "claim", citations=("ext-mtbench-paper",))
+    support = {}
+    assert judge_segments([seg], judge, FakeRetriever([TABLE3]), "practitioner", support) == []
+    assert support == {0: "ext-mtbench-paper#0016"}
+
+
 def test_unsupported_cited_claim_is_p1_and_unknown_evidence_id_is_replaced():
     judge = FakeJudge(route(cited={"supported": False, "numbers": "none",
                                    "evidence_chunk": "made-up#9", "reason": "wrong source"}))

@@ -44,10 +44,11 @@ def check(
             hits.append(RuleHit("JUDGE", f"claim extraction failed: {exc}"))
 
     hits += run_deterministic(text, segments, lookup, config)
+    support: dict[int, str] = {}
     if judge is not None:
-        hits += judge_segments(segments, judge, retriever, reader_segment)
+        hits += judge_segments(segments, judge, retriever, reader_segment, support)
     hits += check_correction_notice(text, issue_date, config)
-    return CheckReport(segments, hits)
+    return CheckReport(segments, hits, support)
 
 
 def default_checker(corpus_version: str = "corpus-v1"):

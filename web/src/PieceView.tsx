@@ -1,0 +1,212 @@
+import { useCallback, useEffect, useState } from "react";
+import { api, errorText, type Hit, type PieceDetail } from "./api";
+import { StateBadge, VerdictBadge } from "./App";
+import Evidence from "./Evidence";
+
+const EDITABLE = ["draft", "in_review", "rejected", "approved"];
+
+export default function PieceView({ id, onChanged }: { id: number; onChanged: () => void }) {
+  const [piece, setPiece] = useState<PieceDetail | null>(null);
+  const [message, setMessage] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [rejecting, setRejecting] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    const { data } = await api.GET("/api/pieces/{piece_id}", { params: { path: { piece_id: id } } });
+    if (data) setPiece(data);
+  }, [id]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  // The checker runs in the background (~30–60 s with the real judge): poll until it's done.
+  useEffect(() => {
+    if (piece?.state !== "checks") return;
+    const timer = setInterval(async () => {
+      await load();
+      onChanged();
+    }, 2500);
+    return () => clearInterval(timer);
+  }, [piece?.state, load, onChanged]);
+
+  async function act(run: () => Promise<{ data?: PieceDetail; error?: unknown }>, ok?: string) {
+    setMessage(null);
+    const { data, error } = await run();
+    if (error) {
+      setMessage({ kind: "error", text: errorText(error) });
+      await load(); // a refusal is still logged in the audit trail
+    } else if (data) {
+      setPiece(data);
+      if (ok) setMessage({ kind: "ok", text: ok });
+    }
+    onChanged();
+  }
+
+  const path = { params: { path: { piece_id: id } } };
+  const submit = () => act(() => api.POST("/api/pieces/{piece_id}/submit", path), "Checks started.");
+  const approve = () => act(() => api.POST("/api/pieces/{piece_id}/approve", path), "Approved.");
+  const reject = (reason: string) =>
+    act(() => api.POST("/api/pieces/{piece_id}/reject", { ...path, body: { reason } }), "Rejected.")
+      .then(() => setRejecting(null));
+  const saveEdit = (text: string) =>
+    act(() => api.PUT("/api/pieces/{piece_id}/text", { ...path, body: { text } }), "Saved as a new version.")
+      .then(() => setEditing(null));
+  const override = (hit: Hit, reason: string) =>
+    act(() => api.POST("/api/pieces/{piece_id}/overrides", { ...path, body: { hit_index: hit.index, reason } }),
+      `Override logged for ${hit.rule}.`);
+
+  if (!piece) return <p className="muted">Loading…</p>;
+  const check = piece.check?.status === "done" ? piece.check : null;
+  const hitsFor = (i: number | null) => check?.hits.filter((h) => h.segment === i) ?? [];
+  const selectedSegment = check && selected !== null ? check.segments[selected] : null;
+
+  return (
+    <div className="piece">
+      <section className="card">
+        <div className="piece-head">
+          <div>
+            <h1>{piece.title}</h1>
+            <p className="muted small">
+              {piece.segment} · version {piece.version}
+              {piece.issue_date && ` · issue date ${piece.issue_date}`}
+              {check && ` · checked against ${check.corpus_version} by ${check.judge_model}`}
+            </p>
+          </div>
+          <div className="badges">
+            <StateBadge state={piece.state} />
+            {piece.verdict && <VerdictBadge verdict={piece.verdict} />}
+          </div>
+        </div>
+
+        <div className="actions">
+          {piece.state === "draft" && <button className="primary" onClick={submit}>Run checks</button>}
+          {piece.state === "checks" && <span className="muted">Checking… (about a minute)</span>}
+          {piece.state === "in_review" && (
+            <>
+              <button className="primary" onClick={approve}>Approve</button>
+              <button onClick={() => setRejecting("")}>Reject…</button>
+            </>
+          )}
+          {EDITABLE.includes(piece.state) && editing === null && (
+            <button onClick={() => setEditing(piece.text)}>Edit text</button>
+          )}
+        </div>
+        {piece.state === "in_review" && piece.blockers.length > 0 && (
+          <p className="warn small">
+            {piece.blockers.length} blocking issue(s) need an override with a reason before approval.
+          </p>
+        )}
+        {message && <p className={message.kind === "error" ? "error" : "ok"}>{message.text}</p>}
+        {piece.check?.status === "failed" && <p className="error">Checks failed: {piece.check.error}</p>}
+
+        {rejecting !== null && (
+          <ReasonForm label="Why reject?" value={rejecting} onChange={setRejecting}
+            onSubmit={reject} onCancel={() => setRejecting(null)} submitLabel="Reject" />
+        )}
+        {editing !== null && (
+          <div className="edit">
+            <textarea rows={10} value={editing} onChange={(e) => setEditing(e.target.value)} />
+            <p className="muted small">Saving makes a new version; it goes back to draft and must be checked again.</p>
+            <div className="actions">
+              <button className="primary" disabled={!editing.trim()} onClick={() => saveEdit(editing)}>Save</button>
+              <button onClick={() => setEditing(null)}>Cancel</button>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <div className="review">
+        <section className="card content">
+          {!check && <pre className="raw">{piece.text}</pre>}
+          {check && hitsFor(null).length > 0 && (
+            <div className="doc-hits">
+              <h3>Whole document</h3>
+              {hitsFor(null).map((h) => <HitRow key={h.index} hit={h} onOverride={override} reviewing={piece.state === "in_review"} />)}
+            </div>
+          )}
+          {check?.segments.map((seg) => (
+            <div key={seg.index}
+              className={`segment v-${seg.verdict} ${seg.index === selected ? "selected" : ""}`}
+              onClick={() => setSelected(seg.index)}>
+              <div className="seg-text">
+                {seg.text}
+                {seg.citations.length > 0 && <span className="cite-mark" title={seg.citations.join(", ")}> [{seg.citations.length}]</span>}
+              </div>
+              <div className="seg-kind">{seg.kind}{seg.exempt_type ? ` · ${seg.exempt_type}` : ""}</div>
+              {hitsFor(seg.index).map((h) => (
+                <HitRow key={h.index} hit={h} onOverride={override} reviewing={piece.state === "in_review"} />
+              ))}
+            </div>
+          ))}
+        </section>
+        <Evidence key={selected ?? -1} segment={selectedSegment} hits={selected !== null ? hitsFor(selected) : []} />
+      </div>
+
+      <section className="card">
+        <h2>Audit trail</h2>
+        <table className="audit">
+          <thead><tr><th>When</th><th>Who</th><th>Action</th><th>State</th><th>Detail</th></tr></thead>
+          <tbody>
+            {piece.audit.map((a, i) => (
+              <tr key={i}>
+                <td>{new Date(a.at).toLocaleTimeString()}</td>
+                <td>{a.actor}</td>
+                <td>{a.action.replace("_", " ")}</td>
+                <td>{a.from_state ?? "—"} → {a.to_state ?? "—"}</td>
+                <td className="small">{summarize(a.detail)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    </div>
+  );
+}
+
+function HitRow({ hit, onOverride, reviewing }: {
+  hit: Hit; onOverride: (h: Hit, reason: string) => Promise<void>; reviewing: boolean;
+}) {
+  const [reason, setReason] = useState<string | null>(null);
+  return (
+    <div className={`hit ${hit.severity} ${hit.override_reason ? "overridden" : ""}`} onClick={(e) => e.stopPropagation()}>
+      <span className={`badge verdict-${hit.severity}`}>{hit.rule}</span>
+      <span className="hit-reason">{hit.reason}</span>
+      {hit.override_reason && <div className="small override-note">Overridden: {hit.override_reason}</div>}
+      {reviewing && hit.severity === "block" && !hit.override_reason && reason === null && (
+        <button className="small-btn" onClick={() => setReason("")}>Override…</button>
+      )}
+      {reason !== null && (
+        <ReasonForm label="Why is the checker wrong here?" value={reason} onChange={setReason}
+          onSubmit={(r) => onOverride(hit, r).then(() => setReason(null))}
+          onCancel={() => setReason(null)} submitLabel="Log override" />
+      )}
+    </div>
+  );
+}
+
+function ReasonForm({ label, value, onChange, onSubmit, onCancel, submitLabel }: {
+  label: string; value: string; onChange: (v: string) => void;
+  onSubmit: (v: string) => void; onCancel: () => void; submitLabel: string;
+}) {
+  return (
+    <div className="reason-form">
+      <label>{label}<textarea rows={2} value={value} onChange={(e) => onChange(e.target.value)} /></label>
+      <div className="actions">
+        <button className="primary" onClick={() => onSubmit(value)}>{submitLabel}</button>
+        <button onClick={onCancel}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function summarize(detail: Record<string, unknown> | null | undefined): string {
+  if (!detail) return "";
+  if (typeof detail.reason === "string") return `${detail.rule ? `${detail.rule}: ` : ""}${detail.reason}`;
+  if (detail.verdict) return `verdict ${detail.verdict} ${JSON.stringify(detail.rules ?? [])}`;
+  if (detail.rules) return `blocked by ${JSON.stringify(detail.rules)}`;
+  if (detail.error) return String(detail.error);
+  if (detail.version) return `version ${detail.version}`;
+  return "";
+}

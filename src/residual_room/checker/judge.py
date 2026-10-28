@@ -86,12 +86,18 @@ class PolicyVerdict(BaseModel):
     hits: list[PolicyHit]
 
 
-def judge_segments(segments: list[Segment], judge, retriever, reader_segment: str) -> list[RuleHit]:
+def judge_segments(
+    segments: list[Segment], judge, retriever, reader_segment: str, support: dict[int, str] | None = None
+) -> list[RuleHit]:
+    """Judgment hits for the segments. If `support` is given, it is filled with
+    {segment index: chunk id} for cited claims the judge found supported, so the
+    review screen can link passing claims to their source too."""
+    support = support if support is not None else {}
     jobs: list[Callable[[], list[RuleHit]]] = []
     for i, seg in enumerate(segments):
         if seg.kind == "claim" and seg.citations:
             passages = _dedupe(p for c in seg.citations for p in retriever.for_citation(c, seg.text))
-            jobs.append(_guard(i, lambda i=i, s=seg, p=passages: _cited(i, s, p, judge)))
+            jobs.append(_guard(i, lambda i=i, s=seg, p=passages: _cited(i, s, p, judge, support)))
         elif seg.kind in ("claim", "statement") or seg.exempt_type == "framing":
             passages = retriever.across_corpus(seg.text)
             jobs.append(_guard(i, lambda i=i, s=seg, p=passages: _uncited(i, s, p, judge)))
@@ -106,12 +112,14 @@ def judge_segments(segments: list[Segment], judge, retriever, reader_segment: st
         return [hit for hits in pool.map(lambda job: job(), jobs) for hit in hits]
 
 
-def _cited(i: int, seg: Segment, passages: list[Passage], judge) -> list[RuleHit]:
+def _cited(i: int, seg: Segment, passages: list[Passage], judge, support: dict[int, str]) -> list[RuleHit]:
     if not passages:
         return [RuleHit("P1", f"nothing found in the cited source(s) {', '.join(seg.citations)}", i)]
     user = f"Claim: {seg.text}\n\nEvidence passages:\n\n" + "\n\n".join(p.render() for p in passages)
     v = judge.ask_json(CITED_SYSTEM.format(rules=rules_text(["P1", "P2"])), user, CitedVerdict)
     evidence = _valid_id(v.evidence_chunk, passages)
+    if v.supported and v.numbers != "mismatch" and evidence:
+        support[i] = evidence
     hits = []
     if not v.supported:
         hits.append(RuleHit("P1", f"cited source does not support the claim: {v.reason}", i, evidence))

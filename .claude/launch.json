@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "residual-room",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "uvicorn", "residual_room.api.main:app", "--port", "8000"],
+      "port": 8000
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "residual-room-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "gen": "openapi-typescript openapi.json -o src/schema.d.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.17.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^6.1.2",
+    "openapi-typescript": "^7.13.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.5"
+  }
+}

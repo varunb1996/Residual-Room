@@ -43,6 +43,7 @@ class RuleHit:
 class CheckReport:
     segments: list[Segment]
     hits: list[RuleHit] = field(default_factory=list)
+    support: dict[int, str] = field(default_factory=dict)  # segment -> supporting chunk id
 
     @property
     def verdict(self) -> Verdict:
