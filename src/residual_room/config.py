@@ -1,6 +1,7 @@
 """Load config/publication.yaml (one publication's brand and policy settings)."""
 
 import re
+from datetime import date, timedelta
 from functools import cached_property, lru_cache
 from pathlib import Path
 
@@ -12,6 +13,24 @@ from residual_room.corpus.manifest import REPO_ROOT
 CONFIG_PATH = REPO_ROOT / "config" / "publication.yaml"
 
 
+class Schedule(BaseModel):
+    issue_1: date
+    every_days: int
+
+    def first_issue_after(self, day: date) -> date:
+        n = max(0, -(-(day - self.issue_1).days // self.every_days))  # ceil division
+        issue = self.issue_1 + timedelta(days=n * self.every_days)
+        return issue if issue > day else issue + timedelta(days=self.every_days)
+
+
+class Correction(BaseModel):
+    explainer: str
+    corrected_source: str
+    superseded_source: str
+    corrected_on: date
+    notice_pattern: str
+
+
 class PublicationConfig(BaseModel):
     model_config = {"frozen": True}
 
@@ -19,6 +38,9 @@ class PublicationConfig(BaseModel):
     segments: list[str]
     default_segment: str
     docs: dict[str, str]
+    operational_sources: list[str]
+    schedule: Schedule
+    corrections: list[Correction]
     avoid_list: list[str]
     ctas: dict[str, list[str]]
     exempt_patterns: dict[str, list[str]]

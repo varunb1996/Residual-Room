@@ -10,6 +10,27 @@ default_segment: practitioner  # for eval cases with no segment (decisions.md, 2
 docs:
   brand_guide: docs/brand-guide.md
   content_policy: docs/content-policy.md
+  schedule: docs/editorial/schedule-v1.md
+  corrections: docs/editorial/corrections.md
+
+# The publication's operational facts (schedule, series, subscription, corrections).
+# Tiny docs, always shown to the judge in full when it checks an uncited sentence:
+# similarity search ranks them below long docs on the same topic.
+operational_sources: [int-schedule-v0, int-schedule-v1, int-series, int-subscription, int-corrections]
+
+# Newsletter schedule (schedule-v1): weekly, Issue 1 on Thursday 2026-11-05.
+schedule:
+  issue_1: 2026-11-05
+  every_days: 7
+
+# Corrections (corrections.md): the first newsletter issue after each one
+# must carry a correction notice. Checked by checker/document.py.
+corrections:
+  - explainer: exp-003
+    corrected_source: exp-003-v2
+    superseded_source: exp-003-v1
+    corrected_on: 2026-11-10
+    notice_pattern: '\bcorrection\b'
 
 # S1: brand guide "Avoid:" list. Matched case-insensitively on word boundaries.
 avoid_list: [revolutionary, game-changer, magic, insane, secret, 10x, "AGI is near"]

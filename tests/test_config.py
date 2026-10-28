@@ -28,6 +28,40 @@ def test_every_brand_guide_cta_type_has_a_pattern():
     assert len(get_config().ctas) == len(listed)
 
 
+def _doc(name: str) -> str:
+    return (REPO_ROOT / get_config().docs[name]).read_text(encoding="utf-8")
+
+
+def test_schedule_matches_schedule_v1():
+    text = _doc("schedule")
+    issue_1 = get_config().schedule.issue_1
+    assert "Thursday" in text and issue_1.strftime("%A") == "Thursday"
+    assert f"{issue_1.day} {issue_1:%B %Y}" in text  # "5 November 2026"
+    assert get_config().schedule.every_days == 7 and "weekly" in text
+
+
+def test_corrections_match_corrections_doc():
+    text = _doc("corrections")
+    for c in get_config().corrections:
+        assert f"{c.explainer} v2 (corrected {c.corrected_on.isoformat()})" in text
+    # The doc names Issue 2 (2026-11-12) as the first issue after the correction.
+    (c,) = get_config().corrections
+    assert get_config().schedule.first_issue_after(c.corrected_on).isoformat() == "2026-11-12"
+    assert "Issue 2 (2026-11-12)" in text
+
+
+def test_operational_sources_are_small_internal_docs():
+    from residual_room.corpus.chunk import MAX_TOKENS, estimate_tokens
+    from residual_room.corpus.manifest import load_manifest
+
+    manifest = load_manifest()
+    for sid in get_config().operational_sources:
+        source = manifest.resolve(sid)
+        assert source.origin == "internal"
+        text = (REPO_ROOT / source.path).read_text(encoding="utf-8")
+        assert estimate_tokens(text) <= MAX_TOKENS  # one chunk each, cheap to always include
+
+
 def test_default_segment_is_a_known_segment():
     cfg = get_config()
     assert cfg.default_segment in cfg.segments

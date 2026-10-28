@@ -103,3 +103,31 @@
 - Verdict: any P rule → block, any S rule → warn, else pass; per-segment verdicts come from the same rule.
 - `config/publication.yaml` holds the avoid-list, CTA patterns and exempt patterns; drift tests fail if the avoid-list or the CTA types disagree with the brand guide.
 - Baseline on all 50 cases with deterministic rules only: they fire on exactly 3 cases (POL-08 S1, POL-10 S3, STL-07 P5), all correct, and fire on none of the 23 expected-pass cases. The other 24 cases need the judge.
+
+## 2026-10-28 — Checker, judge half (build-order step W2-a)
+
+### Models (free only)
+- Judge + claim extractor: `nvidia/nemotron-3-ultra-550b-a55b` on NVIDIA build.nvidia.com; fallback: the same model's `:free` endpoint on OpenRouter (~50 req/day on a free key). Generator: `openai/gpt-oss-20b` on NVIDIA. Different families (NVIDIA vs OpenAI) to avoid self-preference bias. Config in `config/models.yaml`; loading fails if judge and generator share a model.
+- Ruled out by smoke test (2026-10-28): Nemotron 3 Super and Llama-Nemotron 70B/253B return 404 on this NVIDIA account; gpt-oss-120b has no free endpoint on NVIDIA or OpenRouter; OpenRouter's free Gemma was rate-limited upstream. Gemini isn't free for the owner. Local models don't fit the dev PC (7.2 GB RAM, integrated GPU).
+- Observed latency: judge ~2–15 s per call; generator gpt-oss-20b on NVIDIA 74–315 s per call (queueing). Revisit at generation time.
+
+### Client
+- One `httpx` client for OpenAI-compatible APIs, no SDK. Per-provider rate limiter shared across roles, retries on 408/409/429/5xx honouring Retry-After, endpoint fallback on any failure.
+- Judge at temperature 0; replies must be JSON validated by pydantic, with one corrective retry. A judge call that still fails becomes a blocking `JUDGE` hit: unchecked content never passes.
+- Responses cached on disk (`.cache/llm/`, keyed by primary model + prompt + params): eval reruns cost no quota and are reproducible.
+
+### Segment kinds (owner-approved)
+- New kind `statement`: non-factual sentences (promises, predictions, advice, hype). No citation needed, but P3/P4/P6/S2/S4 apply.
+- New exempt type `framing`: series labels, hooks, subject lines. No citation needed, but checked against the internal docs; a contradiction is P1. This reconciles CLN-01/03/04 (correct series label, pass) with STL-06 (wrong series label, P1).
+- Guard rails in code, not left to the model: a cited sentence is never exempt; a candidate the model skips becomes a claim; an LLM "cta" label stands only if the sentence matches one of the brand guide's four CTA types ("Upgrade to Pro" is a statement and gets checked — STL-09).
+
+### Judge checks
+- Cited claims: evidence = the cited chunk, or the 3 closest chunks within a cited source (superseded included). The judge rates support (P1) and numbers separately (P2: value AND referent); if only a number is wrong it should say supported + mismatch. Rule text in prompts is read from `docs/content-policy.md`.
+- Uncited claims, framing and statements: checked against the corpus, superseded included. matches_superseded → P5 (+P2 if a number/date/day conflicts); contradicts_current → P2 if numeric else P1.
+- **Operational docs are always shown in full** (`operational_sources` in the publication config: both schedules, series, subscription, corrections). Found during the live run: similarity search ranked them below longer docs on the same topic (int-subscription was 6th of 9 internal sources for "Upgrade to Residual Room Pro"), so STL-06 and STL-09 passed wrongly. They total a few hundred tokens, so including them always is cheap. A test keeps each one a single chunk.
+- Policy rules: one call per document over all non-exempt sentences (plus opinions and framing): P3, P4, P6, S2, and S4 only for transitioning readers. Rules the model invents or indexes out of range are dropped.
+- Correction notice (STL-10): deterministic, from `schedule` and `corrections` in the publication config (drift-tested against schedule-v1.md and corrections.md). Fixture: `eval/fixtures/stl-10-issue-2.md`.
+
+### Live spot check (not the eval; that's the next step)
+- 15 cases run live: GRD-05, GRD-11, GRD-13, GRD-17, POL-12 (the five hard cases), POL-01, STL-01, STL-04, STL-05, STL-06, STL-09, STL-10, CLN-01, CLN-03, CLN-07. All 15 match their expected verdict and rules (expected ⊆ predicted).
+- Extra rules seen: P1 alongside P2 on number errors, S2 on "agreed", S2/S4 on GRD-17. Allowed by the scoring rule, but S2/S4 over-firing may cost precision and false warnings on clean cases. To be measured by the eval harness, not tuned per case.

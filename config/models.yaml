@@ -1,0 +1,27 @@
+# LLM roles. Free tiers only (see docs/decisions.md). The judge and the generator
+# must be different models (CLAUDE.md); they are also different families
+# (NVIDIA Nemotron vs OpenAI gpt-oss) to avoid self-preference bias.
+# Smoke-tested 2026-10-28: Nemotron 3 Super returns 404 on this account; Ultra works.
+
+providers:
+  nvidia:
+    base_url: https://integrate.api.nvidia.com/v1
+    api_key_env: NVIDIA_API_KEY
+    rpm: 35            # NVIDIA reports ~40/min per model; stay under it
+    max_concurrency: 4
+  openrouter:
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+    rpm: 15
+    max_concurrency: 1
+
+roles:
+  judge:               # claim extraction + every judgment rule
+    - {provider: nvidia, model: nvidia/nemotron-3-ultra-550b-a55b}
+    - {provider: openrouter, model: "nvidia/nemotron-3-ultra-550b-a55b:free"}  # fallback (~50 req/day)
+  generator:
+    - {provider: nvidia, model: openai/gpt-oss-20b}
+
+defaults:
+  judge: {temperature: 0, max_tokens: 2000}
+  generator: {temperature: 0.4, max_tokens: 4000}
