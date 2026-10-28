@@ -93,3 +93,13 @@
 - No vector index yet: exact cosine search over a few thousand rows is fast enough.
 - `search(include_superseded=False)` by default (generation); the checker will pass `True`.
 - `make fetch` uses one GitHub API call per repo (anonymous limit is 60/hour) and honours an optional `GITHUB_TOKEN`.
+
+## 2026-10-28 — Checker, deterministic half (build-order step W1-d)
+- **"Uncited sentence → P1" is not deterministic.** POL-03 ("This series won't make you job-ready on its own") and POL-08 ("Reranking is a game-changer") are uncited but expected pass/warn: they aren't factual claims. Deciding what is a claim is claim extraction, which CLAUDE.md assigns to the LLM.
+- So segments have three kinds: `claim` (set only by the generator or the LLM extractor), `exempt` (with a type), and `candidate` (not recognized by pattern; the LLM decides). The deterministic P1 rule fires only on `claim` segments without a citation, or on any citation to an id not in the corpus.
+- The pre-splitter labels by pattern only what is safe: greeting, sign_off, cta, read_next, opinion. `transition` needs judgment, so only the LLM assigns it. A sentence carrying a citation is never exempt.
+- S3 counts CTA *phrases* across the whole message (POL-10 has three CTAs in two sentences). "unsubscribe" is not a subscribe CTA; "Read next" is not a CTA.
+- P5 (cited half) resolves chunk ids (`<source>#<seq>`) and aliases to a source, and reads status from the corpus version's `sources` table (`StatusLookup.from_corpus`), with the manifest as the test fallback. The two agree for corpus-v1 (tested).
+- Verdict: any P rule → block, any S rule → warn, else pass; per-segment verdicts come from the same rule.
+- `config/publication.yaml` holds the avoid-list, CTA patterns and exempt patterns; drift tests fail if the avoid-list or the CTA types disagree with the brand guide.
+- Baseline on all 50 cases with deterministic rules only: they fire on exactly 3 cases (POL-08 S1, POL-10 S3, STL-07 P5), all correct, and fire on none of the 23 expected-pass cases. The other 24 cases need the judge.

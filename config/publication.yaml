@@ -1,0 +1,32 @@
+# Publication config: the structured values the deterministic checks need.
+# The prose source of truth stays in docs/brand-guide.md and docs/content-policy.md;
+# tests/test_config.py fails if this file drifts from the brand guide.
+# Swapping publications (e.g. the football config) means swapping this file.
+
+name: Residual Room
+segments: [transitioning, practitioner]
+default_segment: practitioner  # for eval cases with no segment (decisions.md, 2026-10-28)
+
+docs:
+  brand_guide: docs/brand-guide.md
+  content_policy: docs/content-policy.md
+
+# S1: brand guide "Avoid:" list. Matched case-insensitively on word boundaries.
+avoid_list: [revolutionary, game-changer, magic, insane, secret, 10x, "AGI is near"]
+
+# S3: the four allowed CTA types (brand guide "Calls to action"). Regexes,
+# case-insensitive; every match counts as one CTA, so one sentence can hold several.
+ctas:
+  read_explainer: ['\bread the (full )?explainer\b']
+  subscribe: ['\bsubscribe\b']
+  read_source: ['\bread the source\b']
+  reply_question: ['\breply with\b']
+
+# Exempt segment types (content policy "Exempt from citation"). Patterns match
+# the start of a sentence, case-insensitive. "transition" has no pattern: it
+# needs judgment, so only the LLM claim extractor assigns it.
+exempt_patterns:
+  greeting: ['^(hi|hello|hey)\b', '^welcome\b']
+  sign_off: ['^—\s*residual room$']
+  read_next: ['^read next\b']
+  opinion: ['^we think\b', "^we're not convinced\\b", '^we believe\b', '^in our view\b']
