@@ -267,3 +267,6 @@
 - **Reader titles:** generated titles keep the "(exp-004, practitioner, newsletter)" suffix for the review queue, where it tells pieces apart. `build_content` strips it, so readers never see it: email subjects, Telegram, WhatsApp and the public page.
 - Removed three subscribers left in the database by an interrupted test run (tag `b36dc341`).
 - **Prompt 10 done criterion met (live, 2026-10-29):** campaign 58 was scheduled for 13:30 IST (08:00 UTC) with no manual action, and the cron-job.org tick sent it at 08:01:03 UTC. Email and Telegram were both delivered. No GitHub run happened at that time.
+
+## 2026-10-29 — Football config swap dropped
+- The owner dropped Prompt 11, the football config swap, which was first in the cut order. Publication-specific values stay in `config/publication.yaml`, so the design still allows a second publication; it just isn't demonstrated. The cut order in CLAUDE.md is updated.

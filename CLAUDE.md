@@ -34,7 +34,8 @@ UI is capped at three screens: review, campaigns, analytics.
 Claim-level checker · calibrated judge · review screen · corrections (P5) check.
 
 ## Cut order if behind schedule
-1. Football config swap 2. WhatsApp mock 3. Analytics LLM narration 4. Campaigns screen polish
+1. WhatsApp mock 2. Analytics LLM narration 3. Campaigns screen polish
+(The football config swap was dropped on 2026-10-29; see docs/decisions.md.)
 
 ## How to work with me (the owner)
 - Plan before coding. For each task: propose the plan and files, wait for my OK, then implement.

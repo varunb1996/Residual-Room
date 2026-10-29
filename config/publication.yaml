@@ -1,7 +1,7 @@
 # Publication config: the structured values the deterministic checks need.
 # The prose source of truth stays in docs/brand-guide.md and docs/content-policy.md;
 # tests/test_config.py fails if this file drifts from the brand guide.
-# Swapping publications (e.g. the football config) means swapping this file.
+# Everything publication-specific lives here, so another publication would be another copy of this file.
 
 name: Residual Room
 segments: [transitioning, practitioner]
