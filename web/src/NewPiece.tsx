@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { api, errorText } from "./api";
 
-// Until generation exists (Prompt 3), pieces are created from pasted text.
+// A hand-written draft goes through exactly the same checks as a generated one.
 export default function NewPiece({ onCreated, onCancel }: { onCreated: (id: number) => void; onCancel: () => void }) {
   const [title, setTitle] = useState("");
   const [segment, setSegment] = useState<"practitioner" | "transitioning">("practitioner");
@@ -22,35 +22,34 @@ export default function NewPiece({ onCreated, onCancel }: { onCreated: (id: numb
   }
 
   return (
-    <section className="card">
-      <h1>New piece</h1>
-      <p className="muted small">Paste a draft. Generation will create pieces here once it's built.</p>
-      <label>
+    <section className="sheet">
+      <h1>Paste a draft</h1>
+      <p className="lede">Write [cite:source-id] after each factual sentence. Sentences without a citation are flagged when you run checks.</p>
+      <label className="field">
         Title
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Issue 2: why your judge flips" />
       </label>
       <div className="row">
-        <label>
-          Reader segment
+        <label className="field grow">
+          Readers
           <select value={segment} onChange={(e) => setSegment(e.target.value as typeof segment)}>
-            <option value="practitioner">practitioner</option>
-            <option value="transitioning">transitioning</option>
+            <option value="practitioner">Practitioners</option>
+            <option value="transitioning">Engineers moving into AI</option>
           </select>
         </label>
-        <label>
+        <label className="field grow">
           Issue date (optional)
           <input type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} />
         </label>
       </div>
-      <label>
+      <label className="field">
         Text
-        <textarea rows={10} value={text} onChange={(e) => setText(e.target.value)}
-          placeholder="Use [cite:source-id] after a claim to cite it." />
+        <textarea className="draft-input" rows={12} value={text} onChange={(e) => setText(e.target.value)} />
       </label>
-      {error && <p className="error">{error}</p>}
-      <div className="actions">
+      {error && <p className="notice error">{error}</p>}
+      <div className="row">
         <button className="primary" disabled={busy || !title.trim() || !text.trim()} onClick={create}>
-          Create draft
+          Save draft
         </button>
         <button onClick={onCancel}>Cancel</button>
       </div>

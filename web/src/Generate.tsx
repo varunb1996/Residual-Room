@@ -40,42 +40,43 @@ export default function Generate({ onCreated, onCancel }: { onCreated: (id: numb
   }
 
   const elapsed = job ? Math.round((now - new Date(job.started_at).getTime()) / 1000) : 0;
+  const locked = job?.status === "running";
   return (
-    <section className="card">
+    <section className="sheet">
       <h1>Generate a draft</h1>
-      <p className="muted small">
-        Grounded in the current corpus only. Every factual sentence must cite a source passage; the draft
-        then goes through the same checks and review as any other piece.
+      <p className="lede">
+        Written only from the current corpus. Every factual sentence has to cite a source passage, and the draft
+        goes through the same checks and review as any other piece.
       </p>
-      <label>
+      <label className="field">
         Explainer
-        <select value={explainer} onChange={(e) => setExplainer(e.target.value)} disabled={!!job}>
+        <select value={explainer} onChange={(e) => setExplainer(e.target.value)} disabled={locked}>
           {explainers.map((x) => (
-            <option key={x.id} value={x.id}>{x.id} · {x.topic} ({x.series})</option>
+            <option key={x.id} value={x.id}>{x.topic} ({x.id}, {x.series})</option>
           ))}
         </select>
       </label>
       <div className="row">
-        <label>
-          Reader segment
-          <select value={segment} onChange={(e) => setSegment(e.target.value as typeof segment)} disabled={!!job}>
-            <option value="practitioner">practitioner</option>
-            <option value="transitioning">transitioning</option>
+        <label className="field grow">
+          Readers
+          <select value={segment} onChange={(e) => setSegment(e.target.value as typeof segment)} disabled={locked}>
+            <option value="practitioner">Practitioners</option>
+            <option value="transitioning">Engineers moving into AI</option>
           </select>
         </label>
-        <label>
-          Kind
-          <select value={kind} onChange={(e) => setKind(e.target.value as typeof kind)} disabled={!!job}>
-            <option value="newsletter">newsletter issue</option>
-            <option value="explainer_summary">explainer summary</option>
+        <label className="field grow">
+          Format
+          <select value={kind} onChange={(e) => setKind(e.target.value as typeof kind)} disabled={locked}>
+            <option value="newsletter">Newsletter issue</option>
+            <option value="explainer_summary">Explainer summary</option>
           </select>
         </label>
       </div>
-      {error && <p className="error">{error}</p>}
-      {job?.status === "running" && <p className="muted">Generating… {elapsed}s (the free model can take a few minutes)</p>}
-      {job?.status === "failed" && <p className="error">Generation failed: {job.error}</p>}
-      <div className="actions">
-        <button className="primary" disabled={job?.status === "running"} onClick={start}>Generate</button>
+      {error && <p className="notice error">{error}</p>}
+      {locked && <p className="notice warn">Writing the draft: {elapsed}s so far. The free model can take a few minutes.</p>}
+      {job?.status === "failed" && <p className="notice error">Generation failed: {job.error}. Try again.</p>}
+      <div className="row">
+        <button className="primary" disabled={locked} onClick={start}>Generate draft</button>
         <button onClick={onCancel}>Close</button>
       </div>
     </section>

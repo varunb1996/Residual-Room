@@ -15,7 +15,7 @@ from residual_room.config import get_config
 from residual_room.corpus.manifest import REPO_ROOT, load_manifest
 
 EVAL_DIR = REPO_ROOT / "eval"
-# The five hard cases named in PROMPTS.md (Prompt 5).
+# The five hard cases the owner singled out for the headline metric.
 HARD_CASES = ("GRD-05", "GRD-11", "GRD-13", "GRD-17", "POL-12")
 FIXTURES = {"STL-10": EVAL_DIR / "fixtures" / "stl-10-issue-2.md"}
 _PASS = {"verdict": "pass", "rules": []}

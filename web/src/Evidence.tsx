@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { api, errorText, type Chunk, type Hit, type Segment } from "./api";
 
-/** Right-hand pane: what a sentence cites, and the source text behind it.
- *  The parent keys this by sentence, so state starts fresh for each one. */
-export default function Evidence({ segment, hits }: { segment: Segment | null; hits: Hit[] }) {
-  const chunkIds = segment
-    ? [...new Set([segment.support, ...hits.map((h) => h.evidence)].filter(
-        (id): id is string => !!id && id.includes("#"),
-      ))]
-    : [];
+/** In the margin beside the selected sentence: what it cites, and the passage behind it. */
+export default function SourcePanel({ segment, hits }: { segment: Segment; hits: Hit[] }) {
+  // Corpus chunk ids look like "source#0012"; source-level ids have no single passage to show.
+  const chunkIds = [...new Set([segment.support, ...hits.map((h) => h.evidence)].filter(
+    (id): id is string => !!id && id.includes("#"),
+  ))];
   const [open, setOpen] = useState<string | null>(chunkIds[0] ?? null);
   const [chunk, setChunk] = useState<Chunk | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -23,41 +21,35 @@ export default function Evidence({ segment, hits }: { segment: Segment | null; h
     });
   }, [open]);
 
-  if (!segment) {
-    return <aside className="evidence muted small">Click a sentence to see its sources.</aside>;
+  if (segment.kind === "exempt") {
+    return <p className="small muted">No citation needed: {segment.exempt_type?.replace("_", " ")}.</p>;
   }
   return (
-    <aside className="evidence">
-      <h2>Sources</h2>
-      <p className="small">
-        <span className="muted">Cites: </span>
-        {segment.citations.length ? segment.citations.map((c) => <code key={c}>{c}</code>) : <em>nothing</em>}
-      </p>
-      {chunkIds.length > 0 ? (
-        <div className="chips">
+    <div className="source">
+      {segment.citations.length === 0 && <p className="small muted">Cites nothing.</p>}
+      {chunkIds.length > 1 && (
+        <div className="source-pick" role="group" aria-label="Passages">
           {chunkIds.map((id) => (
-            <button key={id} className={`chip ${id === open ? "active" : ""}`} onClick={() => setOpen(id)}>
-              {id === segment.support ? "source: " : "evidence: "}
-              {id}
+            <button key={id} aria-pressed={id === open} onClick={() => setOpen(id)}>
+              {id === segment.support ? "Supporting passage" : "Evidence"} {id.split("#")[1]}
             </button>
           ))}
         </div>
-      ) : (
-        <p className="muted small">No source passage linked to this sentence.</p>
       )}
-      {error && <p className="error">{error}</p>}
+      {chunkIds.length === 0 && segment.citations.length > 0 && (
+        <p className="small muted">Cites {segment.citations.join(", ")}; no single passage was matched.</p>
+      )}
+      {error && <p className="small bad-text">{error}</p>}
       {chunk && (
-        <div className="chunk">
-          <div className="chunk-head">
-            <span className={`badge ${chunk.status === "superseded" ? "verdict-block" : "verdict-pass"}`}>
-              {chunk.status}
-            </span>
-            <span className="small">{chunk.source_title}</span>
-          </div>
-          <p className="muted small">{chunk.heading_path}</p>
-          <pre className="chunk-text">{chunk.text}</pre>
-        </div>
+        <>
+          <p>
+            <strong>{chunk.source_title}</strong>
+            {chunk.status === "superseded" && <span className="status-superseded"> (superseded)</span>}
+          </p>
+          <p className="where">{chunk.heading_path.split(" › ").slice(1).join(" › ") || chunk.heading_path}</p>
+          <blockquote>{chunk.text}</blockquote>
+        </>
       )}
-    </aside>
+    </div>
   );
 }

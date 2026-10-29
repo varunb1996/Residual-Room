@@ -13,9 +13,12 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
-# Web (Prompt 6)
+# Web
 web/node_modules/
 web/dist/
 
 # Local Claude Code settings
 .claude/settings.local.json
+
+# Private build notes (kept local, never published)
+PROMPTS.md

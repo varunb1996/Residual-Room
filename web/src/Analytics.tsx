@@ -4,15 +4,37 @@ import type { components } from "./schema";
 
 type View = components["schemas"]["AnalyticsOut"];
 type Row = components["schemas"]["RowOut"];
+type Insight = components["schemas"]["InsightOut"];
 type Dataset = "real" | "seeded";
 
-// Real and seeded data are shown in separate panels and never mixed.
+const RULE_LABEL: Record<string, string> = {
+  channel_gap: "Channels compared",
+  trend_drop: "Falling click-through",
+  unsubscribe_spike: "Unsubscribe spike",
+};
+const VERDICT_LABEL: Record<string, string> = {
+  pass: "Every number checks out",
+  warn: "Checks pass, with warnings",
+  block: "Blocked by the checker",
+};
+
+// Real and seeded data sit in separate columns and are never mixed.
+// The seeded column is hatched so it can't be mistaken for readers' behaviour.
 export default function Analytics() {
   return (
-    <div className="analytics">
-      <Panel dataset="real" />
-      <Panel dataset="seeded" />
-    </div>
+    <>
+      <header className="page-head">
+        <h1>Analytics</h1>
+        <p className="muted">
+          Only tracked-link clicks and deliveries are real. Insights come from fixed rules with a minimum sample;
+          the model only puts them into words, and the checker verifies every number against a metric row.
+        </p>
+      </header>
+      <div className="datasets">
+        <Panel dataset="real" />
+        <Panel dataset="seeded" />
+      </div>
+    </>
   );
 }
 
@@ -53,7 +75,15 @@ function Panel({ dataset }: { dataset: Dataset }) {
     load();
   }
 
-  if (!view) return <section className="card">{error ? <p className="error">{error}</p> : "Loading…"}</section>;
+  const title = dataset === "real" ? "Real readers" : "Seeded data";
+  if (!view) {
+    return (
+      <section className={`dataset ${dataset}`}>
+        <h2>{title}</h2>
+        {error ? <p className="notice error">{error}</p> : <p className="muted">Loading</p>}
+      </section>
+    );
+  }
   const rowsById = new Map(view.rows.map((r) => [r.id, r]));
   const totals = view.rows.filter((r) => r.week === null && !r.derived && r.channel !== "all");
   const insights = view.insights.filter((i) => i.status === "insight");
@@ -61,96 +91,124 @@ function Panel({ dataset }: { dataset: Dataset }) {
   const n = view.narration;
 
   return (
-    <section className={`card panel-${dataset}`}>
-      <div className={`dataset-banner ${dataset}`}>{view.label}</div>
-      <div className="actions">
-        <button onClick={refresh}>{dataset === "real" ? "Refresh real metrics" : "Regenerate seeded data"}</button>
-        <span className="muted small">computed {new Date(view.computed_at).toLocaleString()}</span>
+    <section className={`dataset ${dataset}`} aria-label={title}>
+      <header>
+        <div className="row">
+          <h2 className="grow">{title}</h2>
+          <button onClick={refresh}>{dataset === "real" ? "Recount" : "Regenerate"}</button>
+        </div>
+        <p>{view.label}. Counted {new Date(view.computed_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}.</p>
+      </header>
+      {error && <p className="notice error">{error}</p>}
+
+      <div>
+        <h3>By channel and readers</h3>
+        {totals.length === 0 ? <p className="muted">Nothing delivered yet.</p> : <TotalsTable rows={totals} />}
       </div>
-      {error && <p className="error">{error}</p>}
 
-      <h2>Totals by channel and segment</h2>
-      {totals.length === 0 ? <p className="muted small">No data yet.</p> : <TotalsTable rows={totals} />}
-
-      <h2>Insights</h2>
-      {insights.length === 0 && <p className="muted small">No insight passes the rules (minimum sample and significance).</p>}
-      {insights.map((i, k) => (
-        <div key={k} className="insight">
-          <span className="badge verdict-pass">{i.rule.replace("_", " ")}</span> {i.statement}
-          <div className="small muted">rows: {i.row_ids.map((id) => `m:${id}`).join(", ")}</div>
-        </div>
-      ))}
-      {thin.map((i, k) => (
-        <div key={k} className="insight thin">
-          <span className="badge">not enough data</span> {i.statement}
-        </div>
-      ))}
-
-      <h2>Narration</h2>
-      <p className="muted small">Written by the generator model from the insights above, then run through the same claim checker as newsletters. Every number must cite a metric row.</p>
-      <div className="actions">
-        <button className="primary" disabled={running || insights.length === 0} onClick={narrate}>
-          {running ? "Narrating…" : "Narrate insights"}
-        </button>
-        {running && n && <span className="muted small">{Math.round((now - new Date(n.created_at).getTime()) / 1000)}s (a few minutes)</span>}
+      <div>
+        <h3>What the rules found</h3>
+        {insights.length === 0 && thin.length === 0 && <p className="muted">No rule has enough data to say anything yet.</p>}
+        {insights.map((i, k) => (
+          <div key={k} className="insight">
+            <span className="kind">{RULE_LABEL[i.rule] ?? i.rule.replace("_", " ")}</span>
+            <p>{i.statement}</p>
+            <span className="small muted">From rows {i.row_ids.map((id) => `m:${id}`).join(", ")}</span>
+          </div>
+        ))}
+        {thin.map((i, k) => <ThinInsight key={k} insight={i} />)}
       </div>
-      {n?.status === "failed" && <p className="error">Narration failed: {n.error}</p>}
-      {n?.status === "done" && (
-        <div className="narration">
-          <p className="small">
-            Checker verdict: <span className={`badge verdict-${n.verdict}`}>{n.verdict}</span>
-            <span className="muted"> · written by {n.model}</span>
-          </p>
-          {(n.report?.segments as { text: string; verdict: string; citations: string[] }[] | undefined)?.map((s, k) => (
-            <div key={k} className={`segment v-${s.verdict}`}>
-              <div className="seg-text">{s.text}</div>
-              {s.citations.length > 0 && (
-                <div className="small muted">
-                  {s.citations.map((c) => {
-                    const r = rowsById.get(Number(c.replace("m:", "")));
-                    return <div key={c}><code>{c}</code> {r ? describe(r) : "(row not found)"}</div>;
-                  })}
-                </div>
-              )}
-              {(n.report?.hits as { segment: number | null; rule: string; reason: string }[])
-                .filter((h) => h.segment === k)
-                .map((h, j) => <div key={j} className="hit"><span className={`badge verdict-block`}>{h.rule}</span> {h.reason}</div>)}
-            </div>
-          ))}
-          {(n.report?.document_hits as { rule: string; reason: string }[] | undefined)?.map((h, j) => (
-            <div key={j} className="hit"><span className="badge verdict-block">{h.rule}</span> {h.reason}</div>
-          ))}
+
+      <div className="narration">
+        <h3>Written summary</h3>
+        <p className="small muted">Drafted by {n?.model ?? "the generator"} from the findings above, then checked like a newsletter.</p>
+        <div className="row">
+          <button className="primary" disabled={running || insights.length === 0} onClick={narrate}>
+            {running ? "Writing" : n?.status === "done" ? "Write it again" : "Write a summary"}
+          </button>
+          {running && n && <span className="small muted">{Math.round((now - new Date(n.created_at).getTime()) / 1000)}s so far. This takes a few minutes.</span>}
+          {!running && insights.length === 0 && <span className="small muted">Needs at least one finding.</span>}
         </div>
-      )}
+        {n?.status === "failed" && <p className="notice error">Writing failed: {n.error}</p>}
+        {n?.status === "done" && n.verdict && (
+          <>
+            <p className={`verdict ${n.verdict}`}>{VERDICT_LABEL[n.verdict] ?? n.verdict}</p>
+            {(n.report?.segments as { text: string; verdict: string; citations: string[] }[] | undefined)?.map((s, k) => (
+              <div key={k} className={`narr-seg ${s.verdict}`}>
+                <p>{s.text}</p>
+                {s.citations.map((c) => {
+                  const r = rowsById.get(Number(c.replace("m:", "")));
+                  return <p key={c} className="small muted">{c}: {r ? describe(r) : "row not found"}</p>;
+                })}
+                {(n.report?.hits as { segment: number | null; rule: string; reason: string }[])
+                  .filter((h) => h.segment === k)
+                  .map((h, j) => <p key={j} className="note block small"><span className="rule">{h.rule}</span>{h.reason}</p>)}
+              </div>
+            ))}
+            {(n.report?.document_hits as { rule: string; reason: string }[] | undefined)?.map((h, j) => (
+              <p key={j} className="note block small"><span className="rule">{h.rule}</span>{h.reason}</p>
+            ))}
+          </>
+        )}
+      </div>
     </section>
   );
 }
+
+// A finding the rules held back: shows how far the sample is from the minimum.
+function ThinInsight({ insight }: { insight: Insight }) {
+  const have = insight.n ?? 0;
+  return (
+    <div className="insight thin">
+      <span className="kind">Not enough data yet</span>
+      <p className="muted">{insight.statement}</p>
+      <div className="sample">
+        <div className="bar" role="img" aria-label={`${have} of ${insight.need} needed`}>
+          <span style={{ width: `${Math.min(100, (have / insight.need) * 100)}%` }} />
+        </div>
+        <span className="small muted">{have} of {insight.need}</span>
+      </div>
+    </div>
+  );
+}
+
+const CHANNEL: Record<string, string> = { email: "Email", telegram: "Telegram", whatsapp: "WhatsApp" };
+const READERS: Record<string, string> = { practitioner: "Practitioners", transitioning: "Moving into AI", all: "All" };
 
 function TotalsTable({ rows }: { rows: Row[] }) {
   const keys = [...new Set(rows.map((r) => `${r.channel}|${r.segment}`))].sort();
   const get = (k: string, metric: string) => rows.find((r) => `${r.channel}|${r.segment}` === k && r.metric === metric);
   return (
-    <table className="audit">
-      <thead><tr><th>Channel</th><th>Segment</th><th>Deliveries</th><th>Clicks</th><th title="Clicks are counted per tracked link, not per reader, so repeat clicks can exceed 100%">Clicks per delivery</th></tr></thead>
-      <tbody>
-        {keys.map((k) => {
-          const [channel, segment] = k.split("|");
-          const ctr = get(k, "ctr");
-          return (
-            <tr key={k}>
-              <td>{channel}</td><td>{segment}</td>
-              <td>{get(k, "deliveries")?.value ?? 0}</td><td>{get(k, "clicks")?.value ?? 0}</td>
-              <td>{ctr ? `${(ctr.value * 100).toFixed(1)}%` : "—"}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <div className="table-scroll">
+      <table className="data">
+        <thead>
+          <tr>
+            <th>Channel</th><th>Readers</th><th className="num">Delivered</th><th className="num">Clicks</th>
+            <th className="num" title="Clicks are counted per tracked link, not per reader, so repeat clicks can exceed 100%">Clicks per delivery</th>
+          </tr>
+        </thead>
+        <tbody>
+          {keys.map((k) => {
+            const [channel, segment] = k.split("|");
+            const ctr = get(k, "ctr");
+            return (
+              <tr key={k}>
+                <td>{CHANNEL[channel] ?? channel}</td><td>{READERS[segment] ?? segment}</td>
+                <td className="num">{get(k, "deliveries")?.value ?? 0}</td>
+                <td className="num">{get(k, "clicks")?.value ?? 0}</td>
+                <td className="num">{ctr ? `${(ctr.value * 100).toFixed(1)}%` : "none"}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
 function describe(r: Row): string {
   const rate = (r.metric.endsWith("rate") || r.metric.startsWith("ctr")) && !r.metric.includes("ratio");
   const value = rate ? `${(r.value * 100).toFixed(1)}%` : String(r.value);
-  return `${r.week ?? "whole window"} · ${r.channel} · ${r.segment} · ${r.metric} = ${value}${r.n != null ? ` (n=${r.n})` : ""}`;
+  const where = [r.week ?? "whole window", CHANNEL[r.channel] ?? r.channel, READERS[r.segment] ?? r.segment].join(", ");
+  return `${r.metric} = ${value} (${where}${r.n != null ? `, n = ${r.n}` : ""})`;
 }

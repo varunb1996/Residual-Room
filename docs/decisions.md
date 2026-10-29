@@ -243,3 +243,11 @@
 - **Login protection before going public:** HTTP Basic auth (`ADMIN_USER`/`ADMIN_PASSWORD`) on the screens and `/api`; open: `/health`, `/r/…`, `/u/…`, and the tick (own token). Constant-time comparisons. The app refuses to start on Render (`RENDER` set) without `ADMIN_PASSWORD`.
 - Region Singapore, next to the Neon database. Secrets are `sync: false` (entered in Render's dashboard). The corpus stays in Neon; nothing is ingested on Render. Local-only sources' text is in Neon but only visible behind the login, never published.
 - Not verified locally: the Docker build (Docker isn't installed on the dev PC); Render's first build is its first real test.
+
+## 2026-10-29 — Review UI redesign
+- **Why:** the first screens worked but read as a generic admin panel. The review screen is never-cut and is where a visitor sees grounding, so it got the most care.
+- **Review screen as a proof:** one row per sentence: a rail on the left, the sentence, and a margin on the right. On the rail, a supported sentence sits on a baseline, a warning sits a little off it, and a block sits further off, so you can see where the problems are by scanning. Rule notes and the cited source passage show in the margin beside the sentence; clicking a sentence shows its source.
+- **Queue grouped by what you do next** ("Needs your review", "Drafts", "Ready to send"), not by raw state names. State and verdict use words first, with colour second.
+- **Analytics:** real and seeded data stay in separate columns, and the seeded column is hatched so it can't be mistaken for real readers. Held-back findings show their sample against the minimum (for example, 3 of 100).
+- **Fonts (owner-approved dependency):** `@fontsource/newsreader` (serif, for piece text) and `@fontsource/schibsted-grotesk` (interface). They are self-hosted in the build, so the app makes no request to Google Fonts. Only the Latin subsets and the weights used are imported. Tabular figures are off: in Schibsted Grotesk they also widen "." and ",".
+- Checked in the browser at desktop and phone width, in light and dark mode, with no horizontal page scroll.
