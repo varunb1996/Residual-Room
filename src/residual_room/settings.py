@@ -19,6 +19,12 @@ class Settings(BaseSettings):
     # Not "localhost": browsers may try IPv6 ::1 first, where uvicorn isn't listening.
     public_base_url: str = "http://127.0.0.1:8000"
 
+    # Deployment (Prompt 10). With ADMIN_PASSWORD set, the screens and /api need
+    # HTTP Basic auth; on Render the app refuses to start without it.
+    admin_user: str = "owner"
+    admin_password: str | None = None
+    tick_token: str | None = None  # bearer token for /api/internal/tick (GitHub Actions)
+
     @field_validator("database_url")
     @classmethod
     def use_psycopg3(cls, url: str) -> str:

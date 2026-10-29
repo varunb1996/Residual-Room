@@ -1,0 +1,13 @@
+# Secrets and local-only data never go into the image.
+.env
+corpus_local/
+.cache/
+# Rebuilt inside the image.
+.venv/
+web/node_modules/
+web/dist/
+# Not needed at runtime.
+.git/
+.claude/
+**/__pycache__/
+.pytest_cache/

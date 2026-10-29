@@ -1,0 +1,51 @@
+# Render Blueprint. Free tier: one web service (FastAPI + the built screens).
+# Render's free tier has no background workers or cron jobs, so the scheduler
+# runs as a "tick": .github/workflows/tick.yml POSTs /api/internal/tick every
+# 10 minutes (sends due campaigns, polls Telegram). See docs/decisions.md.
+#
+# `sync: false` values are secrets: enter them in the Render dashboard; they
+# are never stored in this repo.
+
+services:
+  - type: web
+    name: residual-room
+    runtime: docker
+    plan: free
+    region: singapore  # next to the Neon database (aws ap-southeast-1)
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL  # Neon connection string
+        sync: false
+      - key: ADMIN_PASSWORD  # login for the screens; the app won't start on Render without it
+        sync: false
+      - key: ADMIN_USER
+        value: owner
+      - key: TICK_TOKEN  # same value as the GitHub Actions secret TICK_TOKEN
+        sync: false
+      - key: PUBLIC_BASE_URL  # https://<service>.onrender.com, for tracked and unsubscribe links
+        sync: false
+      - key: NVIDIA_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        value: "Residual Room <onboarding@resend.dev>"
+      - key: TEST_EMAILS  # mail never goes anywhere else
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_TEST_CHAT_ID
+        sync: false
+
+  # Paid alternative (Render "Starter", not free): an always-on worker instead of
+  # the GitHub Actions tick. To use it, uncomment and disable tick.yml.
+  # - type: worker
+  #   name: residual-room-worker
+  #   runtime: docker
+  #   plan: starter
+  #   region: singapore
+  #   dockerCommand: uv run --no-sync python -u -m residual_room.worker
+  #   envVars: (the same keys as the web service above)
