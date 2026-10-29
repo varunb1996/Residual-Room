@@ -22,6 +22,11 @@ roles:
   generator:
     - {provider: nvidia, model: openai/gpt-oss-20b}
     - {provider: openrouter, model: "google/gemma-4-31b-it:free"}  # fallback, third family; best effort
+    # Third: the same Gemma on NVIDIA's own servers, for when gpt-oss returns 504 and
+    # OpenRouter's free quota returns 429 (narrations #14 and #15). Smoke-tested
+    # 2026-10-29: valid JSON in 165 s; deepseek-v4.1-flash and glm-5.3-flash timed
+    # out at 180 s, mistral-large-2-instruct is not available on this key (404).
+    - {provider: nvidia, model: google/gemma-4-31b-it}
 
 # timeout (seconds) per request. gpt-oss-20b on NVIDIA took 74–315 s per call
 # in testing (queueing), so the generator gets 10 minutes. max_tokens leaves

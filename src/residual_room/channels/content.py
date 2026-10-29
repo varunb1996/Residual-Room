@@ -5,12 +5,21 @@ segments as stored, or pasted text split the same way the checker split it).
 Each channel then renders this in its own format (render.py).
 """
 
+import re
 from dataclasses import dataclass, field
 
 from residual_room.checker.claims import split_segments
 from residual_room.config import PublicationConfig
 from residual_room.corpus.manifest import Manifest
 from residual_room.settings import get_settings
+
+# Generated titles end "(exp-004, practitioner, newsletter)" so the review queue can
+# tell pieces apart (generation.title_for). Readers never see that suffix.
+INTERNAL_SUFFIX = re.compile(r"\s*\(exp-\d+(, [^()]*)?\)\s*$")
+
+
+def reader_title(title: str) -> str:
+    return INTERNAL_SUFFIX.sub("", title) or title
 
 
 @dataclass
@@ -58,7 +67,7 @@ def build_content(title: str, text: str, segments: list[dict] | None, generation
             if sources[sid].n not in refs:
                 refs.append(sources[sid].n)
         blocks.append(Block(text_, exempt_type, refs))
-    return Content(title, blocks, list(sources.values()), (generation or {}).get("explainer"))
+    return Content(reader_title(title), blocks, list(sources.values()), (generation or {}).get("explainer"))
 
 
 def site_url(path: str = "") -> str:

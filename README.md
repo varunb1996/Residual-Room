@@ -45,13 +45,14 @@ Embeddings run locally (`BAAI/bge-small-en-v1.5` via fastembed); the model (~65 
 Render's free tier runs web services only (no background workers or cron jobs), so:
 
 - **Web service** (`render.yaml`, Docker): the API, the built screens, migrations on start. Protected by HTTP Basic auth (`ADMIN_USER` / `ADMIN_PASSWORD`); the app refuses to start on Render without a password. Open without login: `/health`, tracked links `/r/…`, unsubscribe links `/u/…`.
-- **Scheduler**: `.github/workflows/tick.yml` POSTs `/api/internal/tick` every 10 minutes (sends due campaigns, polls Telegram), authenticated with `TICK_TOKEN`. GitHub may run it a few minutes late, so a scheduled send goes out within ~10–15 minutes.
+- **Scheduler**: a free [cron-job.org](https://cron-job.org) job POSTs `/api/internal/tick` every 10 minutes (sends due campaigns, polls Telegram) with `Authorization: Bearer <TICK_TOKEN>`, so a scheduled send goes out within about 10 minutes. `.github/workflows/tick.yml` is a manual "Run workflow" button for an immediate tick.
 - **Database**: the existing Neon Postgres (`DATABASE_URL`). The corpus is already ingested there; nothing is ingested on Render.
 
 Steps:
 1. Push this repo to GitHub.
 2. In Render: **New → Blueprint**, pick the repo, and fill in the `sync: false` secrets (`DATABASE_URL`, `ADMIN_PASSWORD`, `TICK_TOKEN`, `PUBLIC_BASE_URL` = the service's `https://….onrender.com` URL, the LLM, Resend and Telegram keys, `TEST_EMAILS`).
 3. In GitHub: **Settings → Secrets and variables → Actions**, add `APP_URL` (the same `https://….onrender.com`) and `TICK_TOKEN` (the same value as on Render).
+4. On cron-job.org (free): a job that POSTs `https://….onrender.com/api/internal/tick` every 10 minutes with the header `Authorization: Bearer <TICK_TOKEN>`. The 10-minute calls also keep the free instance awake, which uses about 744 of Render's 750 free instance hours a month.
 4. Stop any local `make worker` (two Telegram pollers would compete for updates).
 
 Paid alternative: an always-on Render background worker (commented out in `render.yaml`).

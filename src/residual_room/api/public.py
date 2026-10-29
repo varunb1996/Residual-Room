@@ -73,9 +73,11 @@ def explainer(explainer_id: str, s: Session = Depends(get_session)):
         content = build_content(piece.title, version.text, version.segments, version.generation, manifest, cfg)
         when = campaign.sent_at.strftime("%d %B %Y").lstrip("0")
         label = READERS.get(segment, segment) if len(sent) > 1 else ""
+        # The subject is the reader-facing title; skip it when it only repeats the topic above.
+        title = "" if content.subject == e.topic else f"<h2>{html.escape(content.subject)}</h2>"
         sections.append(
             f'<section><p class="meta">{html.escape(label + (", sent " if label else "Sent ") + when)}</p>'
-            f"<h2>{html.escape(piece.title)}</h2>{render_web(content, superseded)}</section>"
+            f"{title}{render_web(content, superseded)}</section>"
         )
     if not sections:
         own = [src for src in manifest.external if src.topic in e.source_topics]

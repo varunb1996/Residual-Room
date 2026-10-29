@@ -51,6 +51,15 @@ def test_sources_are_numbered_once_and_aliases_resolve():
     assert c.blocks[1].refs == [1] and c.blocks[2].refs == [2]
 
 
+def test_readers_never_see_the_internal_title_suffix():
+    c = build_content("LLM-as-judge biases (exp-004, practitioner, newsletter)", "", SEGMENTS,
+                      {"explainer": "exp-004"}, load_manifest(), get_config())
+    assert c.subject == "LLM-as-judge biases"
+    assert content().subject == "Issue 2"  # pasted titles are left alone
+    assert build_content("Judges (and why they flip)", "", SEGMENTS, None, load_manifest(),
+                         get_config()).subject == "Judges (and why they flip)"
+
+
 def test_pasted_text_is_split_like_the_checker():
     c = build_content("Welcome", "Welcome to Residual Room!\nIt's free [cite:int-subscription].\n— Residual Room",
                       None, None, load_manifest(), get_config())

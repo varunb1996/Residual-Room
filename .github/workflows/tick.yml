@@ -1,14 +1,13 @@
-# The scheduler for the free Render deploy (Render's free tier has no workers or
-# cron jobs). Every 10 minutes: send due campaigns and poll Telegram, via
-# POST /api/internal/tick. GitHub may run schedules a few minutes late.
+# A manual tick for the free Render deploy: send due campaigns and poll Telegram
+# now, via POST /api/internal/tick. The schedule itself runs on cron-job.org
+# (every 10 minutes): GitHub's own schedule never fired on this repo in testing,
+# and two timers could poll Telegram at once. See docs/decisions.md.
 #
 # Repo secrets needed: APP_URL (https://<service>.onrender.com) and TICK_TOKEN
 # (the same value as TICK_TOKEN on Render).
 name: tick
 
 on:
-  schedule:
-    - cron: "*/10 * * * *"
   workflow_dispatch: {}  # "Run workflow" button for a manual tick
 
 jobs:

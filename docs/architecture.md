@@ -66,7 +66,7 @@ Proposes new sources for a topic: the LLM writes search queries and ranks result
 `corpus_versions`, `sources`, `chunks` (pgvector) · `pieces`, `piece_versions`, `check_runs`, `overrides`, `audit_log` · `generation_jobs` · `subscribers`, `campaigns`, `deliveries`, `links`, `clicks` · `metric_rows`, `narrations`. Migrations in `migrations/`.
 
 ## Deployment
-One Docker web service on Render's free tier (API plus the built screens, behind HTTP Basic auth), Postgres on Neon, and a scheduled GitHub Actions job that calls a token-protected endpoint every 10 minutes to send due campaigns and poll Telegram, standing in for a paid background worker.
+One Docker web service on Render's free tier (API plus the built screens, behind HTTP Basic auth), Postgres on Neon, and a free external cron job (cron-job.org) that calls a token-protected endpoint every 10 minutes to send due campaigns and poll Telegram, standing in for a paid background worker.
 
 ## Where to look next
 - `docs/decisions.md`: every architectural decision, with the reason and the evidence that prompted it, including what went wrong and how it was fixed.

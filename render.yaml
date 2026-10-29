@@ -1,7 +1,7 @@
 # Render Blueprint. Free tier: one web service (FastAPI + the built screens).
 # Render's free tier has no background workers or cron jobs, so the scheduler
-# runs as a "tick": .github/workflows/tick.yml POSTs /api/internal/tick every
-# 10 minutes (sends due campaigns, polls Telegram). See docs/decisions.md.
+# runs as a "tick": cron-job.org POSTs /api/internal/tick every 10 minutes
+# (.github/workflows/tick.yml is the manual button) (sends due campaigns, polls Telegram). See docs/decisions.md.
 #
 # `sync: false` values are secrets: enter them in the Render dashboard; they
 # are never stored in this repo.
@@ -21,7 +21,7 @@ services:
         sync: false
       - key: ADMIN_USER
         value: owner
-      - key: TICK_TOKEN  # same value as the GitHub Actions secret TICK_TOKEN
+      - key: TICK_TOKEN  # same value on cron-job.org and in the GitHub Actions secret
         sync: false
       - key: PUBLIC_BASE_URL  # https://<service>.onrender.com, for tracked and unsubscribe links
         sync: false
@@ -41,7 +41,7 @@ services:
         sync: false
 
   # Paid alternative (Render "Starter", not free): an always-on worker instead of
-  # the GitHub Actions tick. To use it, uncomment and disable tick.yml.
+  # the external tick. To use it, uncomment and delete the cron-job.org job.
   # - type: worker
   #   name: residual-room-worker
   #   runtime: docker
