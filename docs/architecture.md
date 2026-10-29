@@ -54,6 +54,8 @@ A pure state machine: draft → checks → in review → approved → scheduled 
 ### Channels and campaigns (`src/residual_room/channels`)
 One content model per approved version, rendered per channel after approval: email (Resend, only to an allow-listed test list, unsubscribe link in every message), Telegram (bot in polling mode, test channel only), WhatsApp (a mock enforcing opt-in, the 24-hour window and approved templates). Every outbound link goes through a redirect that records campaign, segment and channel, and nothing personal.
 
+The links lead to public pages served by the app itself (`api/public.py`, no login): one per explainer, showing the version a sent campaign delivered, with numbered citations and links to the original sources (never their text). Drafts, pieces in review and approved-but-unsent pieces never appear there.
+
 ### Analytics (`src/residual_room/analytics`)
 Every number is a row in one table, real and seeded data kept apart. Insights come from rules with a minimum sample (two-proportion z-tests, trend and spike detection), and below it the screen says "not enough data". The LLM only narrates detected insights; every number it states must appear in a row it cites, seeded data must be labelled as such, and the narration goes through the same claim checker as newsletters.
 

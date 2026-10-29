@@ -9,6 +9,7 @@ from residual_room.api.campaigns import router as campaigns_router
 from residual_room.api.generation import router as generation_router
 from residual_room.api.internal import router as internal_router
 from residual_room.api.pieces import router as pieces_router
+from residual_room.api.public import router as public_router
 from residual_room.api.security import basic_auth, check_deploy_safety
 from residual_room.corpus.manifest import REPO_ROOT
 from residual_room.db.session import get_engine
@@ -24,6 +25,7 @@ app.include_router(generation_router)
 app.include_router(campaigns_router)
 app.include_router(analytics_router)
 app.include_router(internal_router)
+app.include_router(public_router)
 
 
 @app.exception_handler(WorkflowError)

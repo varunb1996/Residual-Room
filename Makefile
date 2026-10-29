@@ -1,4 +1,4 @@
-.PHONY: setup fetch ingest query scout approve-source generate eval client web migrate run worker test
+.PHONY: setup fetch ingest query scout approve-source generate eval client web migrate run worker relink test
 
 setup:
 	uv sync
@@ -53,6 +53,10 @@ run:
 # Sends due campaigns and polls the Telegram bot (keep running alongside `make run`).
 worker:
 	uv run python -u -m residual_room.worker
+
+# make relink BASE=https://residual-room.onrender.com  (one-off: placeholder links in sent messages)
+relink:
+	uv run python -m residual_room.channels.relink --base $(BASE)
 
 test:
 	uv run pytest

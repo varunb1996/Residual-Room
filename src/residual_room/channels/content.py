@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from residual_room.checker.claims import split_segments
 from residual_room.config import PublicationConfig
 from residual_room.corpus.manifest import Manifest
+from residual_room.settings import get_settings
 
 
 @dataclass
@@ -60,15 +61,20 @@ def build_content(title: str, text: str, segments: list[dict] | None, generation
     return Content(title, blocks, list(sources.values()), (generation or {}).get("explainer"))
 
 
+def site_url(path: str = "") -> str:
+    """A public page of the app (api/public.py), under PUBLIC_BASE_URL."""
+    return get_settings().public_base_url.rstrip("/") + path
+
+
 def cta_target(block: Block, content: Content, config: PublicationConfig) -> str | None:
     """Where a call to action points (None for "reply with a question")."""
     site, text = config.site, block.text.lower()
     if "explainer" in text:
         if content.explainer_id:
-            return site["base_url"] + site["explainer_path"].format(id=content.explainer_id)
-        return site["base_url"]
+            return site_url(site["explainer_path"].format(id=content.explainer_id))
+        return site_url(site["explainers_path"])
     if "source" in text:
         return next((s.url for s in content.sources if s.url), None)
     if "subscribe" in text:
-        return site["base_url"] + site["subscribe_path"]
+        return site_url(site["subscribe_path"])
     return None

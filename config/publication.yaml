@@ -25,9 +25,10 @@ explainers:
   exp-005: {topic: Lost in the Middle (Liu et al.), series: Paper to Practice, source_topics: [5]}
   exp-006: {topic: Judging LLM-as-a-Judge (Zheng et al.), series: Paper to Practice, source_topics: [6]}
 
-# Where outbound links point. There is no website yet: placeholders until one exists.
+# Where outbound links point: public pages served by the app itself, under
+# PUBLIC_BASE_URL (see api/public.py). Only sent pieces are shown there.
 site:
-  base_url: https://residualroom.example
+  explainers_path: /explainers
   explainer_path: /explainers/{id}
   subscribe_path: /subscribe
 

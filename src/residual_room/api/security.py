@@ -2,8 +2,9 @@
 
 Everything (screens and /api) needs the owner's login once ADMIN_PASSWORD is
 set, except what must work for readers and machines: the health check, tracked
-links (/r/), unsubscribe links (/u/), and the tick endpoint, which checks its
-own bearer token. Locally, without ADMIN_PASSWORD, nothing is protected; on
+links (/r/), unsubscribe links (/u/), the public pages those links lead to
+(/explainers, /subscribe: sent pieces only, see api/public.py), and the tick
+endpoint, which checks its own bearer token. Locally, without ADMIN_PASSWORD, nothing is protected; on
 Render (which sets RENDER) the app refuses to start without one.
 """
 
@@ -17,7 +18,7 @@ from fastapi.responses import Response
 
 from residual_room.settings import get_settings
 
-OPEN_PATHS = ("/health", "/r/", "/u/", "/api/internal/")
+OPEN_PATHS = ("/health", "/r/", "/u/", "/api/internal/", "/explainers", "/subscribe")
 
 
 def check_deploy_safety() -> None:

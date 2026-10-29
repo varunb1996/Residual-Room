@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 
 import httpx
 
-from residual_room.channels.content import build_content
+from residual_room.channels.content import build_content, site_url
 from residual_room.channels.links import PreviewLinker
 from residual_room.channels.render import (
     TELEGRAM_LIMIT,
@@ -63,7 +63,7 @@ def test_email_links_are_tracked_and_has_unsubscribe():
     msg = render_email(content(), linker, "https://x/u/abc", get_config())
     labels = {label for label, _ in linker.seen}
     assert labels == {"source", "cta"}
-    assert ("cta", "https://residualroom.example/explainers/exp-004") in linker.seen
+    assert ("cta", site_url("/explainers/exp-004")) in linker.seen  # the app's public page
     assert "https://x/u/abc" in msg.html and "Unsubscribe" in msg.text
     assert "https://arxiv.org" not in msg.html  # only tracked links go out
 

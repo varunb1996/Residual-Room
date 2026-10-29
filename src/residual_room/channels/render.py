@@ -3,7 +3,7 @@
 import html
 from dataclasses import dataclass
 
-from residual_room.channels.content import Block, Content, cta_target
+from residual_room.channels.content import Block, Content, cta_target, site_url
 from residual_room.config import PublicationConfig
 
 TELEGRAM_LIMIT = 4096
@@ -21,7 +21,7 @@ def _block_target(block: Block, content: Content, config: PublicationConfig) -> 
     if block.exempt_type == "cta":
         return cta_target(block, content, config)
     if block.exempt_type == "read_next":
-        return config.site["base_url"] + "/explainers"
+        return site_url(config.site["explainers_path"])
     return None
 
 
@@ -95,8 +95,30 @@ def render_telegram(content: Content, linker, config: PublicationConfig) -> str:
 def render_whatsapp_template(content: Content, linker, config: PublicationConfig) -> tuple[str, list[str]]:
     """The approved `new_issue` template and its parameters (title, tracked link)."""
     cta = next((b for b in content.blocks if b.exempt_type == "cta"), None)
-    target = (cta and cta_target(cta, content, config)) or config.site["base_url"]
+    target = (cta and cta_target(cta, content, config)) or site_url(config.site["explainers_path"])
     return "new_issue", [content.subject[:200], linker.url(target, "cta")]
+
+
+def render_web(content: Content, superseded: set[str]) -> str:
+    """The public explainer page's body (api/public.py): the sent text with numbered
+    citations and a source list. Links to sources only, never their text. Calls to
+    action and read-next lines are dropped: the reader is already on that page."""
+    parts = []
+    for b in content.blocks:
+        if b.exempt_type in ("cta", "read_next"):
+            continue
+        refs = "".join(f'<sup><a href="#src-{n}">{n}</a></sup>' for n in b.refs)
+        cls = ' class="aside"' if b.exempt_type else ""
+        parts.append(f"<p{cls}>{html.escape(b.text)}{refs}</p>")
+    if content.sources:
+        items = []
+        for s in content.sources:
+            title = html.escape(s.title)
+            name = f'<a href="{html.escape(s.url)}" rel="noopener">{title}</a>' if s.url else title
+            flag = ' <span class="superseded">(since superseded)</span>' if s.source_id in superseded else ""
+            items.append(f'<li id="src-{s.n}">{name}{flag}</li>')
+        parts.append(f'<h3>Sources</h3><ol class="sources">{"".join(items)}</ol>')
+    return "".join(parts)
 
 
 def fill_template(name: str, params: list[str], config: PublicationConfig) -> str:

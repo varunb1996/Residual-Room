@@ -251,3 +251,12 @@
 - **Analytics:** real and seeded data stay in separate columns, and the seeded column is hatched so it can't be mistaken for real readers. Held-back findings show their sample against the minimum (for example, 3 of 100).
 - **Fonts (owner-approved dependency):** `@fontsource/newsreader` (serif, for piece text) and `@fontsource/schibsted-grotesk` (interface). They are self-hosted in the build, so the app makes no request to Google Fonts. Only the Latin subsets and the weights used are imported. Tabular figures are off: in Schibsted Grotesk they also widen "." and ",".
 - Checked in the browser at desktop and phone width, in light and dark mode, with no horizontal page scroll.
+
+## 2026-10-29 — Public explainer pages
+- **Problem:** "Read the explainer", "read next" and "subscribe" links redirected to `https://residualroom.example`, the Prompt 7 placeholder for a website that didn't exist. Clicks were counted, then the browser failed.
+- **Decision (owner-approved):** the app serves the pages itself: `/explainers`, `/explainers/{id}` and `/subscribe`, open without the login. An explainer page shows, per reader segment, the version the latest **sent** campaign delivered (not the piece's latest version), rendered by `render_web`: the web page is one more channel, formatted after approval. Calls to action are dropped there, because the reader has already arrived.
+- **What stays private:** drafts, pieces in review, and approved-but-unsent pieces. Sources are shown as links only, never as text, so `commit_allowed` and the license rules are unaffected. A cited source that has since been superseded is marked "(since superseded)".
+- **Links** are built from `PUBLIC_BASE_URL`; `config/publication.yaml` keeps only the paths. Tracked links store their target when sent, so `make relink BASE=…` rewrites the placeholder targets of messages already sent (one-off, placeholder prefix only).
+- **Plain HTML from Python** (`html.escape`, as email does) with system serif fonts: no template engine and no new dependency.
+- **Tests and local login:** `tests/conftest.py` turns the login off by default, because a local `.env` with `ADMIN_PASSWORD` made every API test return 401. The login tests set it again themselves.
+- `/subscribe` says honestly that the publication is in a closed test; public sign-up (double opt-in, verified sending domain) is not built.
