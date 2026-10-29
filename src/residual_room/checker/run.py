@@ -51,15 +51,18 @@ def check(
     return CheckReport(segments, hits, support)
 
 
-def default_checker(corpus_version: str = "corpus-v1"):
-    """Everything check() needs for a real run: status lookup, judge, retriever."""
+def default_checker(corpus_version: str | None = None):
+    """Everything check() needs for a real run: status lookup, judge, retriever.
+    Defaults to the latest corpus version (eval runs pin theirs explicitly)."""
     from residual_room.checker.evidence import CorpusRetriever
     from residual_room.corpus.embed import LocalEmbedder
     from residual_room.corpus.manifest import load_manifest
+    from residual_room.corpus.retrieve import latest_version
     from residual_room.db.session import get_engine
     from residual_room.llm.client import load_role
 
     engine, manifest = get_engine(), load_manifest()
+    corpus_version = corpus_version or latest_version(engine)
     retriever = CorpusRetriever(
         engine, LocalEmbedder(), corpus_version, manifest, get_config().operational_sources
     )

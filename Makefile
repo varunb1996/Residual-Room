@@ -1,15 +1,26 @@
-.PHONY: setup fetch ingest query generate eval client web migrate run worker test
+.PHONY: setup fetch ingest query scout approve-source generate eval client web migrate run worker test
 
 setup:
 	uv sync
 
 SPLIT ?= all
 
+# make fetch [IDS="ext-a ext-b"]  (default: every external source)
 fetch:
-	uv run python -m residual_room.corpus.fetch
+	uv run python -m residual_room.corpus.fetch $(IDS)
 
+# make ingest [VERSION=corpus-v2]  (a new version; existing versions are never overwritten)
+VERSION ?= corpus-v1
 ingest:
-	uv run python -m residual_room.corpus.ingest
+	uv run python -m residual_room.corpus.ingest --version $(VERSION)
+
+# make scout TOPIC="Rerankers for RAG" SERIES="Failure Modes"  (writes data/proposed_sources.yaml)
+scout:
+	uv run python -m residual_room.scout.scout --topic "$(TOPIC)" --series "$(SERIES)"
+
+# make approve-source ID=p1  (the only way a scouted source enters the manifest)
+approve-source:
+	uv run python -m residual_room.scout.approve --id $(ID)
 
 # make query Q="position bias in LLM judges"
 query:

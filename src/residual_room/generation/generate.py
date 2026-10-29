@@ -66,15 +66,19 @@ def generate(
     )
 
 
-def generate_for(explainer_id: str, segment: str, kind: str, corpus_version: str = "corpus-v1") -> Generated:
-    """The real thing: database retrieval and the configured generator model."""
+def generate_for(explainer_id: str, segment: str, kind: str, corpus_version: str | None = None) -> Generated:
+    """The real thing: database retrieval and the configured generator model.
+    Defaults to the latest corpus version; the piece records which one it used."""
     from residual_room.corpus.embed import LocalEmbedder
     from residual_room.corpus.manifest import load_manifest
     from residual_room.db.session import get_engine
     from residual_room.generation.retrieve import retrieve_for
     from residual_room.llm.client import load_role
 
+    from residual_room.corpus.retrieve import latest_version
+
     config = get_config()
+    corpus_version = corpus_version or latest_version(get_engine())
     hits = retrieve_for(config.explainers[explainer_id], load_manifest(), get_engine(), LocalEmbedder(), corpus_version)
     return generate(explainer_id, segment, kind, hits, load_role("generator"), corpus_version, config)
 

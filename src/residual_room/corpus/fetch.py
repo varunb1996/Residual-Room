@@ -29,7 +29,7 @@ def fetch_source(client: httpx.Client, source: Source) -> dict:
     url = source.fetch_url
     if source.is_repo:
         text, extra = _fetch_repo(client, source)
-    elif url.endswith(".pdf"):
+    elif url.endswith(".pdf") or "arxiv.org/pdf/" in url:
         text, extra = pdf_to_markdown(_get(client, url).content), {}
     elif "arxiv.org/html/" in url:
         text, extra = arxiv_html_to_markdown(_get(client, url).text), {}

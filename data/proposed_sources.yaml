@@ -1,0 +1,183 @@
+# Proposed sources from `make scout`. NOT approved: nothing here is in the manifest.
+# Approve one with: make approve-source ID=p1
+topic: Rerankers and cross-encoders for RAG
+series: Failure Modes
+scouted_at: '2026-10-29T04:08:35+00:00'
+queries:
+- reranker failure modes retrieval augmented generation
+- cross-encoder limitations rag pipeline
+- ranking model hallucination propagation rag
+- reranker latency vs accuracy tradeoffs production rag
+- cross-encoder domain shift degradation retrieval
+searched: 60
+candidates:
+- proposal_id: p1
+  key: arxiv:2508.08742
+  kind: paper
+  title: 'SciRerankBench: Benchmarking Rerankers Towards Scientific Retrieval-Augmented Generation with LLMs'
+  year: 2025
+  url: https://arxiv.org/abs/2508.08742
+  relevance: 5
+  reason: Directly benchmarks rerankers for scientific RAG, core to topic
+  license: arXiv perpetual non-exclusive (not redistributable)
+  license_verified: true
+  commit_allowed: false
+  license_evidence: 'arXiv OAI-PMH record for 2508.08742: http://arxiv.org/licenses/nonexclusive-distrib/1.0/'
+  hints:
+    openalex_licenses:
+    - cc-by-nc-sa
+    cited_by: 0
+  status: approved
+  _source:
+    arxiv_id: '2508.08742'
+    acl_url: null
+    repo: null
+  manifest_id: ext-scirerankbench-benchmarking-rerankers-scientific
+- proposal_id: p2
+  key: arxiv:2602.03689
+  kind: paper
+  title: 'Rethinking the Reranker: Boundary-Aware Evidence Selection for Robust Retrieval-Augmented Generation'
+  year: 2026
+  url: https://arxiv.org/abs/2602.03689
+  relevance: 5
+  reason: Focuses on reranker design for robust RAG, primary research
+  license: arXiv perpetual non-exclusive (not redistributable)
+  license_verified: true
+  commit_allowed: false
+  license_evidence: 'arXiv OAI-PMH record for 2602.03689: http://arxiv.org/licenses/nonexclusive-distrib/1.0/'
+  hints:
+    openalex_licenses: []
+    cited_by: 0
+  status: proposed
+  _source:
+    arxiv_id: '2602.03689'
+    acl_url: null
+    repo: null
+- proposal_id: p3
+  key: arxiv:2609.22880
+  kind: paper
+  title: Per-Query Gating of LLM Rerankers for Multi-Hop Retrieval
+  year: 2026
+  url: https://arxiv.org/abs/2609.22880
+  relevance: 5
+  reason: Studies LLM rerankers for multi-hop retrieval, direct relevance
+  license: CC BY 4.0 (arXiv)
+  license_verified: true
+  commit_allowed: true
+  license_evidence: 'arXiv OAI-PMH record for 2609.22880: http://creativecommons.org/licenses/by/4.0/'
+  hints:
+    openalex_licenses:
+    - cc-by
+    cited_by: 0
+  status: approved
+  _source:
+    arxiv_id: '2609.22880'
+    acl_url: null
+    repo: null
+  manifest_id: ext-per-query-gating-llm-rerankers
+- proposal_id: p4
+  key: arxiv:2411.11767
+  kind: paper
+  title: 'Drowning in Documents: Consequences of Scaling Reranker Inference'
+  year: 2024
+  url: https://arxiv.org/abs/2411.11767
+  relevance: 5
+  reason: Analyzes cross-encoder reranker scaling and inference costs, core reference
+  license: CC BY-NC-SA (arXiv; not CC BY, so not redistributed)
+  license_verified: true
+  commit_allowed: false
+  license_evidence: 'arXiv OAI-PMH record for 2411.11767: http://creativecommons.org/licenses/by-nc-sa/4.0/'
+  hints:
+    openalex_licenses:
+    - cc-by-nc-sa
+    cited_by: 1
+  status: proposed
+  _source:
+    arxiv_id: '2411.11767'
+    acl_url: null
+    repo: null
+- proposal_id: p5
+  key: arxiv:2608.21702
+  kind: paper
+  title: 'From Association to Causation: Improving Retrieval Precision of Retrieval-Augmented Generation via Causal
+    Relations and an Attention Mechanism'
+  year: 2026
+  url: https://arxiv.org/abs/2608.21702
+  relevance: 4
+  reason: Improves retrieval precision via causal relations, mentions reranking stage
+  license: arXiv perpetual non-exclusive (not redistributable)
+  license_verified: true
+  commit_allowed: false
+  license_evidence: 'arXiv OAI-PMH record for 2608.21702: http://arxiv.org/licenses/nonexclusive-distrib/1.0/'
+  hints:
+    openalex_licenses: []
+    cited_by: 0
+  status: proposed
+  _source:
+    arxiv_id: '2608.21702'
+    acl_url: null
+    repo: null
+- proposal_id: p6
+  key: arxiv:2610.29722
+  kind: paper
+  title: Retrieval Augmented Generation Compositionality
+  year: 2026
+  url: https://arxiv.org/abs/2610.29722
+  relevance: 4
+  reason: Evaluates RAG component composition including reranking
+  license: CC BY 4.0 (arXiv)
+  license_verified: true
+  commit_allowed: true
+  license_evidence: 'arXiv OAI-PMH record for 2610.29722: http://creativecommons.org/licenses/by/4.0/'
+  hints:
+    openalex_licenses:
+    - cc-by
+    - cc-by-sa
+    cited_by: 0
+  status: proposed
+  _source:
+    arxiv_id: '2610.29722'
+    acl_url: null
+    repo: null
+- proposal_id: p7
+  key: arxiv:2412.15529
+  kind: paper
+  title: 'XRAG: Examining the Core - Benchmarking Foundational Components in Advanced Retrieval-Augmented Generation'
+  year: 2026
+  url: https://arxiv.org/abs/2412.15529
+  relevance: 4
+  reason: XRAG benchmark evaluates foundational RAG components like rerankers
+  license: CC BY-NC-SA (arXiv; not CC BY, so not redistributed)
+  license_verified: true
+  commit_allowed: false
+  license_evidence: 'arXiv OAI-PMH record for 2412.15529: http://creativecommons.org/licenses/by-nc-sa/4.0/'
+  hints:
+    openalex_licenses:
+    - cc-by-nc-sa
+    cited_by: 1
+  status: proposed
+  _source:
+    arxiv_id: '2412.15529'
+    acl_url: null
+    repo: null
+- proposal_id: p8
+  key: arxiv:2606.28337
+  kind: paper
+  title: A Systems-Level Analysis of Sensitivity, Robustness, and Stability in Retrieval-Augmented Generation
+  year: 2026
+  url: https://arxiv.org/abs/2606.28337
+  relevance: 4
+  reason: Systems-level analysis includes embedding-based reranking evaluation
+  license: arXiv perpetual non-exclusive (not redistributable)
+  license_verified: true
+  commit_allowed: false
+  license_evidence: 'arXiv OAI-PMH record for 2606.28337: http://arxiv.org/licenses/nonexclusive-distrib/1.0/'
+  hints:
+    openalex_licenses: []
+    cited_by: 0
+  status: proposed
+  _source:
+    arxiv_id: '2606.28337'
+    acl_url: null
+    repo: null
+topic_number: 7

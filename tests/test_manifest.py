@@ -19,8 +19,10 @@ def test_alias_resolves_to_canonical_source(manifest):
 
 
 def test_non_committable_sources_go_to_gitignored_folder(manifest):
-    local = {s.id for s in manifest.external if s.text_dir.parent == CORPUS_LOCAL_DIR}
-    assert local == {"ext-rag-paper", "ext-mtbench-paper", "ext-rag-survey"}
+    local = {s for s in manifest.external if s.text_dir.parent == CORPUS_LOCAL_DIR}
+    # The original three; scouted sources can add more (e.g. arXiv-licensed papers).
+    assert {"ext-rag-paper", "ext-mtbench-paper", "ext-rag-survey"} <= {s.id for s in local}
+    assert all(not s.committable for s in local)
 
 
 def test_committable_sources_go_to_corpus(manifest):

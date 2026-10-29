@@ -1,0 +1,8 @@
+{
+  "source_id": "ext-per-query-gating-llm-rerankers",
+  "fetch_url": "https://arxiv.org/html/2609.22880",
+  "fetched_at": "2026-10-29T04:22:45+00:00",
+  "sha256": "7d14cb9abc8f8de83ddf852912a2705795864e6174ee7a7bf5311408ec8e7360",
+  "license": "CC BY 4.0 (arXiv)",
+  "committable": true
+}
